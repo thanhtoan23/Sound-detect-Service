@@ -191,11 +191,8 @@ def cmd_test_vad(args):
         print_info(f"Monitoring for {args.duration} seconds...")
         print_info("Speak or make sounds to test!\n")
         
-        table = Table(show_header=True, header_style="bold magenta", box=box.ROUNDED)
-        table.add_column("Time", style="dim", width=8)
-        table.add_column("VAD", style="cyan", width=8)
-        table.add_column("Speech", style="yellow", width=8)
-        table.add_column("Direction", style="green", width=12)
+        console.print("[dim]Time     │ VAD    │ Speech │ Direction[/dim]")
+        console.print("[dim]─────────┼────────┼────────┼──────────[/dim]")
         
         start_time = time.time()
         detections = []
@@ -208,17 +205,27 @@ def cmd_test_vad(args):
             speech = "✓" if status['speech'] else "✗"
             direction = f"{status['direction']}°" if status['direction'] else "N/A"
             
-            table.add_row(timestamp, vad, speech, direction)
-            detections.append(status)
+            # Print line by line - real-time update
+            vad_color = "red" if status['vad'] else "dim"
+            console.print(f"[dim]{timestamp}[/dim] │ [{vad_color}]{vad:^6}[/{vad_color}] │ {speech:^6} │ [green]{direction:>8}[/green]")
             
+            detections.append(status)
             time.sleep(0.5)
         
-        console.print(table)
-        
-        # Summary
+        # Summary at the end
+        console.print("\n" + "─" * 50)
         vad_count = sum(1 for d in detections if d['vad'])
-        console.print(f"\n[bold]Summary:[/bold] {vad_count}/{len(detections)} detections ({vad_count/len(detections)*100:.1f}%)")
+        speech_count = sum(1 for d in detections if d['speech'])
         
+        table = Table(show_header=False, box=box.SIMPLE, show_edge=False)
+        table.add_column("Metric", style="cyan")
+        table.add_column("Value", style="green")
+        
+        table.add_row("📊 Total samples", str(len(detections)))
+        table.add_row("🔴 VAD detections", f"{vad_count} ({vad_count/len(detections)*100:.1f}%)")
+        table.add_row("🗣️ Speech detections", f"{speech_count} ({speech_count/len(detections)*100:.1f}%)")
+        
+        console.print(table)
         detector.disconnect()
         
     except Exception as e:
@@ -231,22 +238,78 @@ def cmd_test_audio(args):
     print_header("🎵 Testing Audio Classification")
     
     try:
+        # Initialize both classifier and detector
         classifier = AudioClassifier()
+        detector = SoundDetector()
         
         print_info(f"Recording for {args.duration} seconds...")
         print_info("Try: speaking, playing music, making noise, or staying silent\n")
         
-        results = classifier.classify_continuous(duration=args.duration)
+        # Connect detector for direction
+        detector_available = detector.connect()
         
-        # Create table
+        if not classifier.start_stream():
+            print_error("Failed to start audio stream")
+            return
+        
+        # Print header
+        if detector_available:
+            console.print("[dim]Type       │ RMS    │ ZCR      │ Direction[/dim]")
+            console.print("[dim]───────────┼────────┼──────────┼──────────[/dim]")
+        else:
+            console.print("[dim]Type       │ RMS    │ ZCR[/dim]")
+            console.print("[dim]───────────┼────────┼──────────[/dim]")
+        
+        # Real-time display
+        sound_counts = {}
+        start_time = time.time()
+        sample_count = 0
+        
+        while time.time() - start_time < args.duration:
+            sound_type, features = classifier.classify_audio()
+            sound_counts[sound_type.value] = sound_counts.get(sound_type.value, 0) + 1
+            sample_count += 1
+            
+            # Get direction if available
+            direction = None
+            if detector_available:
+                direction = detector.get_direction()
+            
+            # Color for each type
+            color_map = {
+                'silence': 'dim',
+                'speech': 'green',
+                'music': 'blue',
+                'noise': 'red',
+                'unknown': 'yellow'
+            }
+            color = color_map.get(sound_type.value, 'white')
+            
+            # Print current detection
+            if detector_available and direction is not None:
+                console.print(f"[{color}]{sound_type.value.upper():10}[/{color}] │ {features.get('rms', 0):6.0f} │ {features.get('zcr', 0):.6f} │ [green]{direction:>3}°[/green]")
+            else:
+                console.print(f"[{color}]{sound_type.value.upper():10}[/{color}] │ {features.get('rms', 0):6.0f} │ {features.get('zcr', 0):.6f}")
+            
+            time.sleep(0.5)
+        
+        # Cleanup detector
+        if detector_available:
+            detector.disconnect()
+        
+        # Summary at the end
+        console.print("\n" + "═" * 60)
+        console.print("[bold cyan]📊 SUMMARY[/bold cyan]")
+        console.print("═" * 60 + "\n")
+        
         table = Table(show_header=True, header_style="bold magenta", box=box.ROUNDED)
         table.add_column("Type", style="cyan", width=12)
         table.add_column("Count", style="green", width=10)
         table.add_column("Percentage", style="yellow", width=15)
         table.add_column("Bar", style="blue", width=30)
         
-        total = sum(results.values())
-        for sound_type, count in sorted(results.items(), key=lambda x: x[1], reverse=True):
+        total = sum(sound_counts.values())
+        for sound_type, count in sorted(sound_counts.items(), key=lambda x: x[1], reverse=True):
             percentage = (count / total * 100) if total > 0 else 0
             bar = "█" * int(percentage / 3.33)
             

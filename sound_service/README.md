@@ -35,17 +35,17 @@ Voice Activity Detection • Direction Tracking • Audio Classification • LED
 
 ### 🎯 Hardware Integration
 - **VAD (Voice Activity Detection)** - Real-time voice detection using XVF-3000 chip
-- **DOA (Direction of Arrival)** - 360° sound source tracking
+- **DOA (Direction of Arrival)** - 360° sound source tracking (0-359°)
 - **LED Control** - 12 RGB LEDs for visual feedback
 - **Built-in Algorithms** - AEC, Beamforming, Noise Suppression
 
 ### 🎵 Software Features
 - **Audio Classification** - Detect Speech, Music, Noise, and Silence
-- **Feature Extraction** - RMS, ZCR, Spectral Centroid analysis
+- **Feature Extraction** - RMS (volume), ZCR (zero-crossing rate), Spectral Centroid
+- **Real-time Display** - Live updates with type, RMS, ZCR, and direction
 - **Statistics & History** - Track up to 100 detection events
 - **REST API** - Control via HTTP endpoints
-- **Modern CLI** - Beautiful terminal interface with tables and colors
-- **Real-time Monitoring** - Live status updates
+- **Modern CLI** - Clean terminal interface with real-time updates
 
 ---
 
@@ -140,7 +140,17 @@ Try:
 - 🔊 Make noise
 - 🤫 Stay silent
 
-**Output:**
+**Real-time Output:**
+```
+Type       │ RMS    │ ZCR      │ Direction
+───────────┼────────┼──────────┼──────────
+SILENCE    │    195 │ 0.082031 │ 270°
+SPEECH     │   1572 │ 0.051758 │ 332°
+SPEECH     │   3059 │ 0.057617 │  26°
+NOISE      │    895 │ 0.190430 │  56°
+```
+
+**Summary:**
 ```
 ╭──────────────┬────────────┬─────────────────┬────────────────────────────────╮
 │ Type         │ Count      │ Percentage      │ Bar                            │
@@ -155,14 +165,20 @@ Try:
 python cli.py test-vad --duration 10
 ```
 
-**Output:**
+**Real-time Output:**
 ```
-╭──────────┬──────────┬──────────┬──────────────╮
-│ Time     │ VAD      │ Speech   │ Direction    │
-├──────────┼──────────┼──────────┼──────────────┤
-│ 15:31:33 │ ⚪       │ ✗        │ 145°         │
-│ 15:31:36 │ 🔴       │ ✗        │ 143°         │
-╰──────────┴──────────┴──────────┴──────────────╯
+Time     │ VAD    │ Speech │ Direction
+─────────┼────────┼────────┼──────────
+15:31:33 │   ⚪   │   ✗    │     145°
+15:31:36 │   🔴   │   ✓    │     143°
+15:31:39 │   🔴   │   ✓    │     180°
+```
+
+**Summary:**
+```
+📊 Total samples       : 20
+🔴 VAD detections      : 12 (60.0%)
+🗣️ Speech detections   : 8 (40.0%)
 ```
 
 ### 4️⃣ Start Full Service
@@ -207,10 +223,10 @@ python cli.py start --no-classifier
 
 **Test Commands:**
 ```bash
-# Test VAD for 30 seconds
+# Test VAD for 30 seconds - shows real-time VAD status and direction
 python cli.py test-vad --duration 30
 
-# Test audio classification for 5 seconds
+# Test audio classification for 5 seconds - shows type, RMS, ZCR, direction
 python cli.py test-audio --duration 5
 
 # Test LED in simulation mode
