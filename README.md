@@ -54,7 +54,7 @@ Voice Activity Detection • Direction Tracking • Audio Classification • LED
 
 ### Step 1: Clone Repository
 ```bash
-git clone https://github.com/thanhtoan23/Sound-detect-Service-.git
+git clone https://github.com/thanhtoan23/Sound-detect-Service.git
 cd Sound-detect-Service-/sound_service
 ```
 

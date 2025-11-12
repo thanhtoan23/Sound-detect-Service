@@ -9,20 +9,16 @@ from collections import deque
 
 from sound_detector import SoundDetector
 from audio_classifier import AudioClassifier, SoundType
-from led_visualizer import LEDVisualizer
 
 
 class SoundDetectionService:
     
     def __init__(self, 
-                 enable_led: bool = True,
                  enable_audio_classification: bool = True,
                  history_size: int = 100):
         self.sound_detector = SoundDetector()
         self.audio_classifier = AudioClassifier() if enable_audio_classification else None
-        self.led_visualizer = LEDVisualizer() if enable_led else None
         
-        self.enable_led = enable_led
         self.enable_audio_classification = enable_audio_classification
         
         self.is_running = False
@@ -64,7 +60,6 @@ class SoundDetectionService:
         self.thread.start()
         
         print("Service started successfully!")
-        print(f"   - LED Visualization: {'ON' if self.enable_led else 'OFF'}")
         print(f"   - Audio Classification: {'ON' if self.enable_audio_classification else 'OFF'}")
         print()
         
@@ -85,10 +80,7 @@ class SoundDetectionService:
         if self.audio_classifier:
             self.audio_classifier.cleanup()
         
-        if self.led_visualizer:
-            self.led_visualizer.off()
-        
-        print("✅ Service đã dừng")
+        print("Service stopped")
 
     def _run_loop(self):
         """Main loop chạy trong thread"""
@@ -130,19 +122,14 @@ class SoundDetectionService:
                 if vad or sound_type != SoundType.SILENCE:
                     self._add_to_history(self.current_state)
                 
-                # 6. Update LED visualization
-                if self.enable_led and self.led_visualizer:
-                    self._update_led_display(self.current_state)
-                
-                # 7. Sleep một chút
+                # 6. Sleep một chút
                 time.sleep(0.1)
                 
             except Exception as e:
-                print(f"❌ Lỗi trong service loop: {e}")
+                print(f"Error in service loop: {e}")
                 time.sleep(1)
 
     def _update_statistics(self, state: Dict):
-        """Cập nhật thống kê"""
         self.statistics['total_detections'] += 1
         
         if state['vad']:
@@ -172,29 +159,7 @@ class SoundDetectionService:
         }
         self.history.append(event)
 
-    def _update_led_display(self, state: Dict):
-        """Cập nhật LED display"""
-        try:
-            direction = state['direction']
-            sound_type = state['sound_type']
-            vad = state['vad']
-            
-            # Chọn cách hiển thị dựa trên state
-            if sound_type == SoundType.SILENCE:
-                self.led_visualizer.off()
-            elif vad and direction is not None:
-                # Ưu tiên hiển thị direction khi có VAD
-                self.led_visualizer.show_direction(direction)
-            else:
-                # Hiển thị sound type
-                self.led_visualizer.show_sound_type(
-                    sound_type.value if isinstance(sound_type, SoundType) else str(sound_type)
-                )
-        except Exception as e:
-            pass  # Ignore LED errors
-
     def get_current_state(self) -> Dict:
-        """Lấy state hiện tại"""
         state = self.current_state.copy()
         if isinstance(state.get('sound_type'), SoundType):
             state['sound_type'] = state['sound_type'].value

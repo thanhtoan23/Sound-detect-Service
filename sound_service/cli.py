@@ -16,7 +16,6 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from sound_detector import SoundDetector
 from audio_classifier import AudioClassifier, SoundType
-from led_visualizer import LEDVisualizer
 from sound_service import SoundDetectionService
 import config
 
@@ -28,7 +27,7 @@ def print_header(text, style="bold cyan"):
 
 
 def print_error(text):
-    console.print(f"[bold red]X[/bold red] {text}")
+    console.print(f"[bold red]✗[/bold red] {text}")
 
 
 def print_success(text):
@@ -36,16 +35,15 @@ def print_success(text):
 
 
 def print_info(text):
-    console.print(f"[blue]i[/blue] {text}")
+    console.print(f"[blue]ℹ[/blue] {text}")
 
 
 def cmd_start(args):
-    print_header("🚀 Starting Sound Detection Service")
+    print_header("Starting Sound Detection Service")
     
     try:
         service = SoundDetectionService(
-            use_led=not args.no_led,
-            use_classifier=not args.no_classifier
+            enable_audio_classification=not args.no_classifier
         )
         
         with Progress(
@@ -87,7 +85,7 @@ def monitor_service_live(service):
         table.add_column("🎵 Sound Type", style="blue", width=15)
         table.add_column("📊 Count", style="magenta", width=10)
         
-        status = service.get_current_status()
+        status = service.get_current_state()
         stats = service.get_statistics()
         
         vad = "🔴 Yes" if status.get('vad') else "⚪ No"
@@ -96,7 +94,6 @@ def monitor_service_live(service):
         sound_type = status.get('sound_type', 'unknown').upper()
         count = stats.get('total_detections', 0)
         
-        # Color coding
         sound_color = {
             'SPEECH': 'green',
             'MUSIC': 'blue', 
@@ -197,14 +194,13 @@ def cmd_test_vad(args):
             speech = "✓" if status['speech'] else "✗"
             direction = f"{status['direction']}°" if status['direction'] else "N/A"
             
-            # Print line by line - real-time update
             vad_color = "red" if status['vad'] else "dim"
             console.print(f"[dim]{timestamp}[/dim] │ [{vad_color}]{vad:^6}[/{vad_color}] │ {speech:^6} │ [green]{direction:>8}[/green]")
             
             detections.append(status)
             time.sleep(0.5)
         
-        # Summary at the end
+        # Summary
         console.print("\n" + "─" * 50)
         vad_count = sum(1 for d in detections if d['vad'])
         speech_count = sum(1 for d in detections if d['speech'])
@@ -230,21 +226,18 @@ def cmd_test_audio(args):
     print_header("🎵 Testing Audio Classification")
     
     try:
-        # Initialize both classifier and detector
         classifier = AudioClassifier()
         detector = SoundDetector()
         
         print_info(f"Recording for {args.duration} seconds...")
         print_info("Try: speaking, playing music, making noise, or staying silent\n")
         
-        # Connect detector for direction
         detector_available = detector.connect()
         
         if not classifier.start_stream():
             print_error("Failed to start audio stream")
             return
         
-        # Print header
         if detector_available:
             console.print("[dim]Type       │ RMS    │ ZCR      │ Direction[/dim]")
             console.print("[dim]───────────┼────────┼──────────┼──────────[/dim]")
@@ -252,22 +245,17 @@ def cmd_test_audio(args):
             console.print("[dim]Type       │ RMS    │ ZCR[/dim]")
             console.print("[dim]───────────┼────────┼──────────[/dim]")
         
-        # Real-time display
         sound_counts = {}
         start_time = time.time()
-        sample_count = 0
         
         while time.time() - start_time < args.duration:
             sound_type, features = classifier.classify_audio()
             sound_counts[sound_type.value] = sound_counts.get(sound_type.value, 0) + 1
-            sample_count += 1
             
-            # Get direction if available
             direction = None
             if detector_available:
                 direction = detector.get_direction()
             
-            # Color for each type
             color_map = {
                 'silence': 'dim',
                 'speech': 'green',
@@ -277,7 +265,6 @@ def cmd_test_audio(args):
             }
             color = color_map.get(sound_type.value, 'white')
             
-            # Print current detection
             if detector_available and direction is not None:
                 console.print(f"[{color}]{sound_type.value.upper():10}[/{color}] │ {features.get('rms', 0):6.0f} │ {features.get('zcr', 0):.6f} │ [green]{direction:>3}°[/green]")
             else:
@@ -285,11 +272,10 @@ def cmd_test_audio(args):
             
             time.sleep(0.5)
         
-        # Cleanup detector
         if detector_available:
             detector.disconnect()
         
-        # Summary at the end
+        # Summary
         console.print("\n" + "═" * 60)
         console.print("[bold cyan]📊 SUMMARY[/bold cyan]")
         console.print("═" * 60 + "\n")
@@ -320,41 +306,11 @@ def cmd_test_audio(args):
             )
         
         console.print(table)
-        
         classifier.stop()
         
     except Exception as e:
         print_error(f"Test failed: {e}")
         sys.exit(1)
-
-
-def cmd_test_led(args):
-    """Test LED visualization"""
-    print_header("💡 Testing LED Visualization")
-    
-    try:
-        led = LEDVisualizer(simulation=args.simulation)
-        
-        console.print("[yellow]Testing LED patterns...[/yellow]\n")
-        
-        # Test sound types
-        for sound_type in [SoundType.SPEECH, SoundType.MUSIC, SoundType.NOISE]:
-            console.print(f"  Testing {sound_type.name}...")
-            led.show_sound_type(sound_type)
-            time.sleep(1)
-        
-        # Test directions
-        console.print("\n[yellow]Testing directions...[/yellow]\n")
-        for angle in [0, 90, 180, 270]:
-            console.print(f"  Direction {angle}°")
-            led.show_direction(angle)
-            time.sleep(1)
-        
-        led.turn_off()
-        print_success("LED test complete")
-        
-    except Exception as e:
-        print_error(f"Test failed: {e}")
 
 
 def cmd_record(args):
@@ -366,9 +322,7 @@ def cmd_record(args):
         
         with Progress(console=console) as progress:
             task = progress.add_task("[cyan]Recording...", total=args.duration)
-            
             classifier.record_to_file(args.output, args.duration)
-            
             progress.update(task, completed=args.duration)
         
         print_success(f"Recorded {args.duration}s to {args.output}")
@@ -398,7 +352,6 @@ Examples:
     # Start command
     start_parser = subparsers.add_parser('start', help='Start the service')
     start_parser.add_argument('--monitor', action='store_true', help='Monitor mode')
-    start_parser.add_argument('--no-led', action='store_true', help='Disable LED')
     start_parser.add_argument('--no-classifier', action='store_true', help='Disable audio classification')
     
     # Status command
@@ -411,10 +364,6 @@ Examples:
     # Test audio command
     test_audio_parser = subparsers.add_parser('test-audio', help='Test audio classification')
     test_audio_parser.add_argument('--duration', type=int, default=10, help='Duration in seconds')
-    
-    # Test LED command
-    test_led_parser = subparsers.add_parser('test-led', help='Test LED visualization')
-    test_led_parser.add_argument('--simulation', action='store_true', help='Simulation mode')
     
     # Record command
     record_parser = subparsers.add_parser('record', help='Record audio to file')
@@ -433,7 +382,6 @@ Examples:
         'status': cmd_status,
         'test-vad': cmd_test_vad,
         'test-audio': cmd_test_audio,
-        'test-led': cmd_test_led,
         'record': cmd_record
     }
     
