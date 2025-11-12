@@ -1,73 +1,56 @@
-# 🎤 ReSpeaker Sound Detection Service
+# ReSpeaker Sound Detection Service
 
-<div align="center">
+Professional sound detection service for ReSpeaker Mic Array v2.0
 
-![Python](https://img.shields.io/badge/python-3.7+-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Status](https://img.shields.io/badge/status-stable-brightgreen.svg)
-
-**Professional sound detection service for ReSpeaker Mic Array v2.0**  
 Voice Activity Detection • Direction Tracking • Audio Classification • LED Control
 
-[Quick Start](#-quick-start) • [Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [API](#-rest-api) • [Troubleshooting](#-troubleshooting)
+## Table of Contents
 
-</div>
-
----
-
-## 📑 Table of Contents
-
-- [Features](#-features)
-- [Requirements](#-requirements)
-- [Installation](#-installation)
-- [Quick Start](#-quick-start)
-- [Usage](#-usage)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Usage](#usage)
   - [CLI Commands](#cli-commands)
-  - [REST API](#-rest-api)
-- [Project Structure](#-project-structure)
-- [Configuration](#-configuration)
-- [Troubleshooting](#-troubleshooting)
-- [Contributing](#-contributing)
+  - [REST API](#rest-api)
+- [Project Structure](#project-structure)
+- [Configuration](#configuration)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
 
----
+## Features
 
-## ✨ Features
+### Hardware Integration
+- VAD (Voice Activity Detection) - Real-time voice detection using XVF-3000 chip
+- DOA (Direction of Arrival) - 360° sound source tracking (0-359°)
+- LED Control - 12 RGB LEDs for visual feedback
+- Built-in Algorithms - AEC, Beamforming, Noise Suppression
 
-### 🎯 Hardware Integration
-- **VAD (Voice Activity Detection)** - Real-time voice detection using XVF-3000 chip
-- **DOA (Direction of Arrival)** - 360° sound source tracking (0-359°)
-- **LED Control** - 12 RGB LEDs for visual feedback
-- **Built-in Algorithms** - AEC, Beamforming, Noise Suppression
+### Software Features
+- Audio Classification - Detect Speech, Music, Noise, and Silence
+- Feature Extraction - RMS (volume), ZCR (zero-crossing rate), Spectral Centroid
+- Real-time Display - Live updates with type, RMS, ZCR, and direction
+- Statistics & History - Track up to 100 detection events
+- REST API - Control via HTTP endpoints
+- Modern CLI - Clean terminal interface with real-time updates
 
-### 🎵 Software Features
-- **Audio Classification** - Detect Speech, Music, Noise, and Silence
-- **Feature Extraction** - RMS (volume), ZCR (zero-crossing rate), Spectral Centroid
-- **Real-time Display** - Live updates with type, RMS, ZCR, and direction
-- **Statistics & History** - Track up to 100 detection events
-- **REST API** - Control via HTTP endpoints
-- **Modern CLI** - Clean terminal interface with real-time updates
-
----
-
-## 📋 Requirements
+## Requirements
 
 ### Hardware
-- **ReSpeaker Mic Array v2.0** (USB version)
+- ReSpeaker Mic Array v2.0 (USB version)
 - USB port on your computer
 
 ### Software
-- **Python 3.7+**
-- **pip** package manager
-- **libusb driver** (Windows only - for VAD/DOA features)
+- Python 3.7+
+- pip package manager
+- libusb driver (Windows only - for VAD/DOA features)
 
 ### Operating Systems
-- ✅ Windows 10/11
-- ✅ macOS
-- ✅ Linux
+- Windows 10/11
+- macOS
+- Linux
 
----
-
-## 🚀 Installation
+## Installation
 
 ### Step 1: Clone Repository
 ```bash
@@ -93,54 +76,50 @@ For VAD/DOA functionality on Windows, install the USB driver:
 
 #### Using Zadig (Recommended)
 
-1. **Download** [Zadig](https://zadig.akeo.ie/)
-2. **Run Zadig** as Administrator
-3. Click **Options** → Check ✅ **"List All Devices"**
-4. In dropdown, select: **"SEEED Control (Interface 3)"**
-5. Select driver: **libusb-win32** (NOT libusbK or WinUSB)
-6. Click **"Install Driver"** or **"Replace Driver"**
+1. Download [Zadig](https://zadig.akeo.ie/)
+2. Run Zadig as Administrator
+3. Click Options → Check "List All Devices"
+4. In dropdown, select: "SEEED Control (Interface 3)"
+5. Select driver: libusb-win32 (NOT libusbK or WinUSB)
+6. Click "Install Driver" or "Replace Driver"
 
-⚠️ **IMPORTANT:**
-- **ONLY** install driver for **"SEEED Control (Interface 3)"**
-- **DO NOT** install for **"ReSpeaker 4 Mic Array (UAC1.0)"** - this is the audio interface!
+Important:
+- ONLY install driver for "SEEED Control (Interface 3)"
+- DO NOT install for "ReSpeaker 4 Mic Array (UAC1.0)" - this is the audio interface!
 
-#### Verify Installation
+Verify Installation
 ```bash
 python cli.py status
 ```
 
 Expected output:
 ```
-╔═══════════════════════════════╗
-║ 📊 Device Status              ║
-╚═══════════════════════════════╝
-  🔌 Connection   ✓ Connected
-  🎤 VAD          Inactive
-  🧭 Direction    340°
-  📡 Device       ReSpeaker Mic Array v2.0
+Device Status
+  Connection   Connected
+  VAD          Inactive
+  Direction    340°
+  Device       ReSpeaker Mic Array v2.0
 ```
 
----
+## Quick Start
 
-## 🎯 Quick Start
-
-### 1️⃣ Check Device Status
+### 1. Check Device Status
 ```bash
 python cli.py status
 ```
 
-### 2️⃣ Test Audio Classification (No Driver Needed)
+### 2. Test Audio Classification (No Driver Needed)
 ```bash
 python cli.py test-audio --duration 10
 ```
 
 Try:
-- 🗣️ Speak
-- 🎵 Play music
-- 🔊 Make noise
-- 🤫 Stay silent
+- Speak
+- Play music
+- Make noise
+- Stay silent
 
-**Real-time Output:**
+Real-time Output:
 ```
 Type       │ RMS    │ ZCR      │ Direction
 ───────────┼────────┼──────────┼──────────
@@ -150,7 +129,7 @@ SPEECH     │   3059 │ 0.057617 │  26°
 NOISE      │    895 │ 0.190430 │  56°
 ```
 
-**Summary:**
+Summary:
 ```
 ╭──────────────┬────────────┬─────────────────┬────────────────────────────────╮
 │ Type         │ Count      │ Percentage      │ Bar                            │
@@ -160,12 +139,12 @@ NOISE      │    895 │ 0.190430 │  56°
 ╰──────────────┴────────────┴─────────────────┴────────────────────────────────╯
 ```
 
-### 3️⃣ Test VAD & Direction (Requires Driver on Windows)
+### 3. Test VAD & Direction (Requires Driver on Windows)
 ```bash
 python cli.py test-vad --duration 10
 ```
 
-**Real-time Output:**
+Real-time Output:
 ```
 Time     │ VAD    │ Speech │ Direction
 ─────────┼────────┼────────┼──────────
@@ -174,29 +153,27 @@ Time     │ VAD    │ Speech │ Direction
 15:31:39 │   🔴   │   ✓    │     180°
 ```
 
-**Summary:**
+Summary:
 ```
-📊 Total samples       : 20
-🔴 VAD detections      : 12 (60.0%)
-🗣️ Speech detections   : 8 (40.0%)
+Total samples       : 20
+VAD detections      : 12 (60.0%)
+Speech detections   : 8 (40.0%)
 ```
 
-### 4️⃣ Start Full Service
+### 4. Start Full Service
 ```bash
 python cli.py start --monitor
 ```
 
-Press `Ctrl+C` to stop.
+Press Ctrl+C to stop.
 
----
-
-## 📖 Usage
+## Usage
 
 ### CLI Commands
 
 The service provides a modern command-line interface with beautiful output.
 
-#### Available Commands
+Available Commands
 
 | Command | Description | Example |
 |---------|-------------|---------|
@@ -207,9 +184,9 @@ The service provides a modern command-line interface with beautiful output.
 | `test-led` | Test LED visualization | `python cli.py test-led --simulation` |
 | `record` | Record audio to file | `python cli.py record output.wav --duration 5` |
 
-#### Command Options
+Command Options
 
-**Start Command:**
+Start Command:
 ```bash
 # Start with real-time monitoring
 python cli.py start --monitor
@@ -221,7 +198,7 @@ python cli.py start --no-led
 python cli.py start --no-classifier
 ```
 
-**Test Commands:**
+Test Commands:
 ```bash
 # Test VAD for 30 seconds - shows real-time VAD status and direction
 python cli.py test-vad --duration 30
@@ -233,13 +210,13 @@ python cli.py test-audio --duration 5
 python cli.py test-led --simulation
 ```
 
-**Record Command:**
+Record Command:
 ```bash
 # Record 10 seconds to file
 python cli.py record output.wav --duration 10
 ```
 
-#### Get Help
+Get Help
 ```bash
 # General help
 python cli.py --help
@@ -249,22 +226,20 @@ python cli.py start --help
 python cli.py test-vad --help
 ```
 
----
-
-## 🌐 REST API
+## REST API
 
 ### Start API Server
 ```bash
 python api.py
 ```
 
-Server runs at `http://localhost:5000`
+Server runs at http://localhost:5000
 
 ### API Endpoints
 
-#### Service Control
+Service Control
 
-**Start Service**
+Start Service
 ```bash
 POST /api/start
 Content-Type: application/json
@@ -275,12 +250,12 @@ Content-Type: application/json
 }
 ```
 
-**Stop Service**
+Stop Service
 ```bash
 POST /api/stop
 ```
 
-**Get Status**
+Get Status
 ```bash
 GET /api/status
 ```
@@ -300,9 +275,9 @@ Response:
 }
 ```
 
-#### Statistics & History
+Statistics & History
 
-**Get Statistics**
+Get Statistics
 ```bash
 GET /api/statistics
 ```
@@ -326,19 +301,19 @@ Response:
 }
 ```
 
-**Get History**
+Get History
 ```bash
 GET /api/history?limit=50
 ```
 
-**Clear History**
+Clear History
 ```bash
 POST /api/history/clear
 ```
 
-#### LED Control
+LED Control
 
-**Set LED Color**
+Set LED Color
 ```bash
 POST /api/led/color
 Content-Type: application/json
@@ -350,7 +325,7 @@ Content-Type: application/json
 }
 ```
 
-**Set LED Direction**
+Set LED Direction
 ```bash
 POST /api/led/direction
 Content-Type: application/json
@@ -360,7 +335,7 @@ Content-Type: application/json
 }
 ```
 
-**Turn Off LEDs**
+Turn Off LEDs
 ```bash
 POST /api/led/off
 ```
@@ -385,37 +360,35 @@ curl -X POST http://localhost:5000/api/led/color \
   -d '{"r": 0, "g": 255, "b": 0}'
 ```
 
----
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 sound_service/
-├── 📄 Core Modules
+├── Core Modules
 │   ├── sound_detector.py       # VAD & DOA from XVF-3000 chip
 │   ├── audio_classifier.py     # Audio classification engine
 │   ├── led_visualizer.py       # LED control & visualization
 │   └── sound_service.py         # Main service integration
 │
-├── 🖥️ Interfaces
+├── Interfaces
 │   ├── cli.py                   # Modern CLI with rich library
 │   └── api.py                   # REST API (Flask)
 │
-├── ⚙️ Configuration
+├── Configuration
 │   ├── config.py                # Settings & constants
 │   └── __init__.py              # Package initialization
 │
-├── 📚 Documentation
+├── Documentation
 │   └── README.md                # This file
 │
-├── 📦 Dependencies
+├── Dependencies
 │   └── requirements.txt         # Python packages
 │
-└── 🪟 Windows Tools
+└── Windows Tools
     └── respeaker.bat            # Quick launcher
 ```
 
-### Module Details
+Module Details
 
 | Module | Lines | Purpose |
 |--------|-------|---------|
@@ -426,11 +399,9 @@ sound_service/
 | `cli.py` | 350 | Command-line interface |
 | `api.py` | 322 | REST API server |
 | `config.py` | 38 | Configuration settings |
-| **Total** | **2,081** | **Production-ready code** |
+| Total | 2,081 | Production-ready code |
 
----
-
-## ⚙️ Configuration
+## Configuration
 
 Edit `config.py` to customize settings:
 
@@ -462,9 +433,7 @@ API_PORT = 5000                 # API port
 API_DEBUG = False               # Debug mode
 ```
 
----
-
-## 🔧 Advanced Usage
+## Advanced Usage
 
 ### Using as Python Library
 
@@ -533,15 +502,11 @@ print(f"Spectral Centroid: {features['spectral_centroid']:.2f} Hz")
 print(f"Energy: {features['energy']:.2f}")
 ```
 
----
-
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Device Not Found
 
-**Problem:** `❌ Không tìm thấy ReSpeaker Mic Array v2.0`
-
-**Solutions:**
+Problem: Device not found error
 1. Check USB connection - try different USB port
 2. Verify device in system:
    - **Windows:** Device Manager
@@ -560,66 +525,66 @@ print(f"Energy: {features['energy']:.2f}")
    python -c "import pyaudio; p = pyaudio.PyAudio(); [print(f'{i}: {p.get_device_info_by_index(i)[\"name\"]}') for i in range(p.get_device_count())]; p.terminate()"
    ```
 
-2. **Windows:**
+2. Windows:
    - Open Settings → Sound → Input devices
    - Should see "ReSpeaker 4 Mic Array (UAC1.0)"
    - If not visible, uninstall and replug device
 
-3. **Linux:**
+3. Linux:
    ```bash
    arecord -l  # List capture devices
    aplay -l    # List playback devices
    ```
 
-4. **Restore audio driver:**
+4. Restore audio driver:
    - Unplug ReSpeaker
    - In Device Manager, uninstall the device
    - Replug - Windows will reinstall audio driver
 
 ### VAD/DOA Not Working (Windows)
 
-**Problem:** Direction shows "N/A", VAD always inactive, or USB errors
+Problem: Direction shows "N/A", VAD always inactive, or USB errors
 
-**Solutions:**
+Solutions:
 
-1. **Verify driver installation:**
+1. Verify driver installation:
    - Only "SEEED Control (Interface 3)" needs libusb driver
    - Audio interface must keep Windows USB Audio driver
 
-2. **Check in Zadig:**
+2. Check in Zadig:
    - Open Zadig → Options → List All Devices
    - "SEEED Control" should have libusb-win32
    - "ReSpeaker 4 Mic Array" should have WinUSB or Windows driver
 
-3. **Correct driver installation:**
+3. Correct driver installation:
    - Use **libusb-win32**, NOT libusbK or WinUSB
    - Only install for Interface 3
    - Restart application after installation
 
-4. **Audio classification works without driver:**
+4. Audio classification works without driver:
    - VAD/DOA requires driver
    - Audio classification uses PyAudio (no driver needed)
    - Use: `python cli.py test-audio` (works without driver)
 
 ### USB Control Transfer Errors
 
-**Problem:** `device not functioning` or control transfer errors
+Problem: Device not functioning or control transfer errors
 
-**Solutions:**
-1. **Reinstall driver with Zadig:**
+Solutions:
+1. Reinstall driver with Zadig:
    - Select correct interface (SEEED Control)
    - Use libusb-win32 driver
    - Replace/reinstall driver
 
-2. **Run as Administrator:**
+2. Run as Administrator:
    - On Windows, some USB operations need admin rights
    - Right-click Command Prompt → Run as Administrator
 
-3. **Check USB cable:**
+3. Check USB cable:
    - Use good quality USB cable
    - Try different USB port (USB 2.0 works best)
 
-4. **Linux permissions:**
+4. Linux permissions:
    ```bash
    sudo python cli.py test-vad
    # Or add udev rules for permanent access
@@ -627,9 +592,9 @@ print(f"Energy: {features['energy']:.2f}")
 
 ### Import Errors
 
-**Problem:** `ModuleNotFoundError: No module named 'rich'` or similar
+Problem: ModuleNotFoundError for various modules
 
-**Solution:**
+Solution:
 ```bash
 # Install/reinstall all dependencies
 pip install -r requirements.txt
@@ -640,31 +605,31 @@ pip install pyusb pyaudio numpy scipy flask flask-cors rich
 
 ### Windows: PyAudio Installation Issues
 
-**Problem:** PyAudio installation fails on Windows
+Problem: PyAudio installation fails on Windows
 
-**Solutions:**
-1. **Download prebuilt wheel:**
+Solutions:
+1. Download prebuilt wheel:
    - Visit: https://www.lfd.uci.edu/~gohlke/pythonlibs/#pyaudio
    - Download matching your Python version
    - Install: `pip install PyAudio‑0.2.11‑cp39‑cp39‑win_amd64.whl`
 
-2. **Or use conda:**
+2. Or use conda:
    ```bash
    conda install pyaudio
    ```
 
 ### Performance Issues
 
-**Problem:** High CPU usage or lag
+Problem: High CPU usage or lag
 
-**Solutions:**
-1. **Adjust update intervals in config.py:**
+Solutions:
+1. Adjust update intervals in config.py:
    ```python
    UPDATE_INTERVAL = 1.0  # Increase from 0.5
    MONITOR_REFRESH_RATE = 0.5  # Increase from 0.3
    ```
 
-2. **Disable features:**
+2. Disable features:
    ```bash
    # Start without LED
    python cli.py start --no-led
@@ -673,32 +638,28 @@ pip install pyusb pyaudio numpy scipy flask flask-cors rich
    python cli.py start --no-classifier
    ```
 
-3. **Close other applications using audio**
+3. Close other applications using audio
 
----
+## Performance
 
-## 📊 Performance
+- Audio Classification Accuracy: ~90% for speech/silence
+- VAD Detection Latency: < 100ms
+- DOA Update Rate: ~10 Hz
+- CPU Usage: < 5% (idle), ~15% (active detection)
+- Memory Usage: ~50-100 MB
+- Supported Sample Rates: 16 kHz (default), 44.1 kHz
 
-- **Audio Classification Accuracy:** ~90% for speech/silence
-- **VAD Detection Latency:** < 100ms
-- **DOA Update Rate:** ~10 Hz
-- **CPU Usage:** < 5% (idle), ~15% (active detection)
-- **Memory Usage:** ~50-100 MB
-- **Supported Sample Rates:** 16 kHz (default), 44.1 kHz
-
----
-
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Here's how you can help:
 
-1. **Fork the repository**
-2. **Create feature branch:** `git checkout -b feature/amazing-feature`
-3. **Commit changes:** `git commit -m 'Add amazing feature'`
-4. **Push to branch:** `git push origin feature/amazing-feature`
-5. **Open Pull Request**
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open Pull Request
 
-### Development Setup
+Development Setup
 
 ```bash
 # Clone repo
@@ -712,51 +673,31 @@ pip install -e .
 python -m pytest tests/
 ```
 
----
-
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
----
+## Acknowledgments
 
-## 🙏 Acknowledgments
+- XMOS - XVF-3000 chipset and algorithms
+- Seeed Studio - ReSpeaker Mic Array v2.0 hardware
+- respeaker/usb_4_mic_array - Original USB control code reference
+- Python Community - Amazing libraries (PyAudio, NumPy, Flask, Rich)
 
-- **XMOS** - XVF-3000 chipset and algorithms
-- **Seeed Studio** - ReSpeaker Mic Array v2.0 hardware
-- **respeaker/usb_4_mic_array** - Original USB control code reference
-- **Python Community** - Amazing libraries (PyAudio, NumPy, Flask, Rich)
+## Contact
 
----
+- Author: Thanh Toan
+- GitHub: [@thanhtoan23](https://github.com/thanhtoan23)
+- Repository: [Sound-detect-Service](https://github.com/thanhtoan23/Sound-detect-Service-)
+- Issues: [Report Bug](https://github.com/thanhtoan23/Sound-detect-Service-/issues)
 
-## 📧 Contact
+## Resources
 
-- **Author:** Thanh Toan
-- **GitHub:** [@thanhtoan23](https://github.com/thanhtoan23)
-- **Repository:** [Sound-detect-Service-](https://github.com/thanhtoan23/Sound-detect-Service-)
-- **Issues:** [Report Bug](https://github.com/thanhtoan23/Sound-detect-Service-/issues)
-
----
-
-## 📚 Resources
-
-### Documentation
+Documentation
 - [ReSpeaker Mic Array v2.0 Wiki](https://wiki.seeedstudio.com/ReSpeaker_Mic_Array_v2.0/)
 - [XMOS XVF-3000 Datasheet](https://www.xmos.com/xvf3000/)
 - [PyAudio Documentation](https://people.csail.mit.edu/hubert/pyaudio/docs/)
 
-### Related Projects
+Related Projects
 - [respeaker/usb_4_mic_array](https://github.com/respeaker/usb_4_mic_array) - Original firmware
 - [respeaker/pixel_ring](https://github.com/respeaker/pixel_ring) - LED control library
-
----
-
-<div align="center">
-
-**Made with ❤️ for ReSpeaker Community**
-
-⭐ **Star this repo if you find it helpful!**
-
-![Visitors](https://visitor-badge.laobi.icu/badge?page_id=thanhtoan23.Sound-detect-Service)
-
-</div>

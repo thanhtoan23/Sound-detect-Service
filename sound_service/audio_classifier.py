@@ -1,12 +1,4 @@
-"""
-Audio Classifier Module
-Phân loại loại âm thanh: Speech, Music, Noise, Silence
-
-Sử dụng:
-- PyAudio để thu âm từ ReSpeaker
-- Numpy/Scipy để phân tích tín hiệu
-- Các đặc trưng: Volume, Zero-Crossing Rate, Spectral features
-"""
+"""Audio Classifier Module for ReSpeaker"""
 
 import pyaudio
 import numpy as np
@@ -18,7 +10,6 @@ from enum import Enum
 
 
 class SoundType(Enum):
-    """Các loại âm thanh"""
     SILENCE = "silence"
     SPEECH = "speech"
     MUSIC = "music"
@@ -27,30 +18,19 @@ class SoundType(Enum):
 
 
 class AudioClassifier:
-    """
-    Phân loại âm thanh dựa trên đặc trưng tín hiệu
-    """
     
-    # Cấu hình PyAudio
-    CHUNK = 1024  # Số samples mỗi frame
-    RATE = 16000  # Sample rate (Hz)
-    CHANNELS = 6  # ReSpeaker có 6 channels (6_channels_firmware)
+    CHUNK = 1024
+    RATE = 16000
+    CHANNELS = 6
     FORMAT = pyaudio.paInt16
     
-    # Ngưỡng phân loại
-    SILENCE_THRESHOLD = 500  # RMS threshold cho silence
-    SPEECH_ZCR_MIN = 0.01    # Zero-crossing rate min cho speech
-    SPEECH_ZCR_MAX = 0.15    # Zero-crossing rate max cho speech
-    MUSIC_ZCR_MIN = 0.001    # Music thường có ZCR thấp hơn
+    SILENCE_THRESHOLD = 500
+    SPEECH_ZCR_MIN = 0.01
+    SPEECH_ZCR_MAX = 0.15
+    MUSIC_ZCR_MIN = 0.001
     MUSIC_ZCR_MAX = 0.05
     
     def __init__(self, device_index: Optional[int] = None):
-        """
-        Khởi tạo AudioClassifier
-        
-        Args:
-            device_index: Index của ReSpeaker trong PyAudio (None = auto detect)
-        """
         self.device_index = device_index
         self.p = pyaudio.PyAudio()
         self.stream = None
@@ -60,7 +40,6 @@ class AudioClassifier:
             self.device_index = self._find_respeaker_device()
 
     def _find_respeaker_device(self) -> Optional[int]:
-        """Tự động tìm ReSpeaker device"""
         info = self.p.get_host_api_info_by_index(0)
         num_devices = info.get('deviceCount')
         
@@ -72,12 +51,11 @@ class AudioClassifier:
                     print(f"✅ Tìm thấy ReSpeaker: {name} (index: {i})")
                     return i
         
-        print("⚠️  Không tìm thấy ReSpeaker, sử dụng device mặc định")
+        print("Warning: ReSpeaker not found, using default device")
         return None
 
     def list_audio_devices(self):
-        """Liệt kê tất cả audio devices"""
-        print("\n📢 Danh sách Audio Devices:")
+        print("\nAudio Devices:")
         print("=" * 60)
         info = self.p.get_host_api_info_by_index(0)
         num_devices = info.get('deviceCount')
@@ -91,7 +69,6 @@ class AudioClassifier:
                 print()
 
     def start_stream(self):
-        """Bắt đầu audio stream"""
         try:
             self.stream = self.p.open(
                 format=self.FORMAT,
@@ -102,84 +79,45 @@ class AudioClassifier:
                 frames_per_buffer=self.CHUNK
             )
             self.is_recording = True
-            print("🎤 Đã bắt đầu audio stream")
+            print("Audio stream started")
             return True
         except Exception as e:
-            print(f"❌ Lỗi khi mở stream: {e}")
+            print(f"Error opening stream: {e}")
             return False
 
     def stop_stream(self):
-        """Dừng audio stream"""
         if self.stream:
             self.stream.stop_stream()
             self.stream.close()
             self.is_recording = False
-            print("⏹️  Đã dừng audio stream")
+            print("Audio stream stopped")
 
     def read_audio_chunk(self) -> Optional[np.ndarray]:
-        """
-        Đọc một chunk audio
-        Returns: Numpy array hoặc None nếu lỗi
-        """
         if not self.stream or not self.is_recording:
             return None
         
         try:
             data = self.stream.read(self.CHUNK, exception_on_overflow=False)
-            # Convert bytes to numpy array
             audio_data = np.frombuffer(data, dtype=np.int16)
             
-            # Extract channel 0 (processed audio for ASR)
-            # Channel 0 là audio đã được xử lý bởi các thuật toán trên chip
             audio_channel_0 = audio_data[0::self.CHANNELS]
             
             return audio_channel_0
         except Exception as e:
-            print(f"❌ Lỗi khi đọc audio: {e}")
+            print(f"Error reading audio: {e}")
             return None
 
     def calculate_rms(self, audio_data: np.ndarray) -> float:
-        """
-        Tính RMS (Root Mean Square) - đo độ lớn âm thanh
-        
-        Args:
-            audio_data: Numpy array của audio
-            
-        Returns:
-            RMS value
-        """
         return np.sqrt(np.mean(audio_data.astype(float) ** 2))
 
     def calculate_zcr(self, audio_data: np.ndarray) -> float:
-        """
-        Tính Zero-Crossing Rate - tần suất đổi dấu của tín hiệu
-        Speech: ZCR cao (nhiều biến động)
-        Music: ZCR thấp hơn (mượt hơn)
-        
-        Args:
-            audio_data: Numpy array của audio
-            
-        Returns:
-            ZCR value (0-1)
-        """
         signs = np.sign(audio_data)
-        signs[signs == 0] = -1  # Đổi 0 thành -1
+        signs[signs == 0] = -1
         zero_crossings = np.abs(np.diff(signs))
         zcr = np.sum(zero_crossings) / (2 * len(audio_data))
         return zcr
 
     def calculate_spectral_centroid(self, audio_data: np.ndarray) -> float:
-        """
-        Tính Spectral Centroid - "trọng tâm" của phổ tần số
-        Speech: Centroid cao (nhiều năng lượng ở tần số cao)
-        Music: Phân bố đều hơn
-        
-        Args:
-            audio_data: Numpy array của audio
-            
-        Returns:
-            Spectral centroid (Hz)
-        """
         # FFT để lấy phổ tần số
         spectrum = np.abs(np.fft.rfft(audio_data))
         freqs = np.fft.rfftfreq(len(audio_data), 1/self.RATE)
@@ -252,13 +190,6 @@ class AudioClassifier:
         return SoundType.UNKNOWN
 
     def classify_audio(self):
-        """
-        Phân loại một đoạn audio hiện tại
-        Đọc chunk, phân tích và trả về kết quả
-        
-        Returns:
-            Tuple[SoundType, Dict]: (loại âm thanh, features)
-        """
         chunk = self.read_audio_chunk()
         if chunk is None:
             return (SoundType.UNKNOWN, {})
@@ -269,18 +200,11 @@ class AudioClassifier:
         return (sound_type, features)
 
     def analyze_continuous(self, duration: int = 10, interval: float = 0.5):
-        """
-        Phân tích liên tục trong khoảng thời gian
-        
-        Args:
-            duration: Thời gian phân tích (giây)
-            interval: Khoảng cách giữa các lần phân tích (giây)
-        """
         if not self.is_recording:
-            print("❌ Stream chưa được mở. Gọi start_stream() trước.")
+            print("Stream not opened. Call start_stream() first.")
             return
         
-        print(f"🎵 Bắt đầu phân tích âm thanh trong {duration} giây...")
+        print(f"Analyzing audio for {duration} seconds...")
         print("=" * 60)
         
         start_time = time.time()
@@ -288,7 +212,6 @@ class AudioClassifier:
         
         try:
             while time.time() - start_time < duration:
-                # Đọc nhiều chunks để có sample đủ lớn
                 chunks = []
                 for _ in range(int(interval * self.RATE / self.CHUNK)):
                     chunk = self.read_audio_chunk()
@@ -302,7 +225,6 @@ class AudioClassifier:
                     
                     sound_counts[sound_type] += 1
                     
-                    # Emoji cho mỗi loại âm thanh
                     emoji_map = {
                         SoundType.SILENCE: "🤫",
                         SoundType.SPEECH: "🗣️",

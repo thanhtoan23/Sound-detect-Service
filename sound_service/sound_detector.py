@@ -1,12 +1,4 @@
-"""
-Sound Detector Module
-Phát hiện âm thanh sử dụng VAD và DOA từ ReSpeaker Mic Array v2.0
-
-Chức năng:
-- Voice Activity Detection (VAD): Phát hiện có tiếng nói không
-- Direction of Arrival (DOA): Xác định hướng âm thanh (0-359 độ)
-- Lấy các tham số từ chip XVF-3000
-"""
+"""Sound Detector Module for ReSpeaker Mic Array v2.0"""
 
 import usb.core
 import usb.util
@@ -15,17 +7,12 @@ from typing import Optional, Dict, Tuple
 
 
 class Tuning:
-    """
-    Class để giao tiếp với chip XVF-3000 qua USB
-    Lấy thông tin VAD, DOA và các tham số khác
-    """
     TIMEOUT = 100000
 
     def __init__(self, dev):
         self.dev = dev
 
     def write(self, name, value):
-        """Ghi giá trị vào parameter"""
         try:
             self.dev.ctrl_transfer(
                 usb.util.CTRL_OUT | usb.util.CTRL_TYPE_VENDOR | usb.util.CTRL_RECIPIENT_DEVICE,
@@ -34,52 +21,40 @@ class Tuning:
             print(f"USB Error khi ghi {name}: {e}")
 
     def read(self, name):
-        """Đọc giá trị từ parameter - theo code gốc từ respeaker/usb_4_mic_array"""
         try:
-            # Parameters mapping: name -> (id, offset, type, ...)
-            # VAD (VOICEACTIVITY): id=19, offset=32, type='int'
-            # DOA (DOAANGLE): id=21, offset=0, type='int'
-            # SPEECH (SPEECHDETECTED): id=19, offset=22, type='int'
-            # AGC (AGCGAIN): id=19, offset=3, type='float'
-            
             params = {
-                19: 'int',  # VOICEACTIVITY
-                21: 'int',  # DOAANGLE  
-                22: 'int',  # SPEECHDETECTED
-                6: 'float'  # AGCGAIN
+                19: 'int',
+                21: 'int',
+                22: 'int',
+                6: 'float'
             }
             
             param_id = int(name)
             param_type = params.get(param_id, 'int')
             
-            # Offset mapping
             offsets = {
-                19: 32,  # VOICEACTIVITY
-                21: 0,   # DOAANGLE
-                22: 22,  # SPEECHDETECTED
-                6: 3     # AGCGAIN
+                19: 32,
+                21: 0,
+                22: 22,
+                6: 3
             }
             
             offset = offsets.get(param_id, 0)
             
-            # Build command: bit 7 set for read, bit 6 set for int type
             cmd = 0x80 | offset
             if param_type == 'int':
                 cmd |= 0x40
             
-            # Read 8 bytes
             response = self.dev.ctrl_transfer(
                 usb.util.CTRL_IN | usb.util.CTRL_TYPE_VENDOR | usb.util.CTRL_RECIPIENT_DEVICE,
                 0, cmd, param_id, 8, self.TIMEOUT)
             
-            # Unpack response: two int32 values
             import struct
             result = struct.unpack('ii', bytes(response))
             
             if param_type == 'int':
                 return result[0]
             else:
-                # Float: mantissa * 2^exponent
                 return result[0] * (2.0 ** result[1])
                 
         except Exception as e:
@@ -87,17 +62,15 @@ class Tuning:
 
     @property
     def direction(self):
-        """Lấy góc DOA (Direction of Arrival) - 0-359 độ"""
         try:
-            return self.read(21)  # DOAANGLE parameter
+            return self.read(21)
         except:
             return None
 
     @property
     def is_voice(self):
-        """Kiểm tra có tiếng nói không - Voice Activity Detection"""
         try:
-            return self.read(19)  # VOICEACTIVITY parameter
+            return self.read(19)
         except:
             return 0
 

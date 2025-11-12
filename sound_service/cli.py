@@ -1,7 +1,4 @@
-"""
-Modern CLI for ReSpeaker Sound Detection Service
-Beautiful command-line interface with rich library
-"""
+"""Modern CLI for ReSpeaker Sound Detection Service"""
 
 import sys
 import argparse
@@ -27,27 +24,22 @@ console = Console()
 
 
 def print_header(text, style="bold cyan"):
-    """Print beautiful header"""
     console.print(Panel(f"[{style}]{text}[/{style}]", box=box.DOUBLE))
 
 
 def print_error(text):
-    """Print error message"""
-    console.print(f"[bold red]✗[/bold red] {text}")
+    console.print(f"[bold red]X[/bold red] {text}")
 
 
 def print_success(text):
-    """Print success message"""
     console.print(f"[bold green]✓[/bold green] {text}")
 
 
 def print_info(text):
-    """Print info message"""
-    console.print(f"[blue]ℹ[/blue] {text}")
+    console.print(f"[blue]i[/blue] {text}")
 
 
 def cmd_start(args):
-    """Start the sound detection service"""
     print_header("🚀 Starting Sound Detection Service")
     
     try:

@@ -1,16 +1,4 @@
-"""
-REST API for Sound Detection Service
-Cung cấp HTTP API để điều khiển và lấy thông tin từ service
-
-Endpoints:
-- GET /status - Lấy trạng thái hiện tại
-- GET /statistics - Lấy thống kê
-- GET /history - Lấy lịch sử events
-- POST /start - Khởi động service
-- POST /stop - Dừng service
-- POST /led/brightness - Đổi độ sáng LED
-- POST /led/pattern - Đổi LED pattern
-"""
+"""REST API for Sound Detection Service"""
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -19,18 +7,15 @@ import time
 
 from sound_service import SoundDetectionService
 
-# Khởi tạo Flask app
 app = Flask(__name__)
-CORS(app)  # Enable CORS for web clients
+CORS(app)
 
-# Global service instance
 service = None
 service_lock = threading.Lock()
 
 
 @app.route('/')
 def index():
-    """Homepage with API documentation"""
     return jsonify({
         'name': 'ReSpeaker Sound Detection API',
         'version': '1.0.0',
@@ -50,7 +35,6 @@ def index():
 
 @app.route('/status', methods=['GET'])
 def get_status():
-    """Lấy trạng thái hiện tại"""
     global service
     
     with service_lock:
@@ -70,7 +54,6 @@ def get_status():
 
 @app.route('/statistics', methods=['GET'])
 def get_statistics():
-    """Lấy thống kê"""
     global service
     
     with service_lock:
@@ -89,7 +72,6 @@ def get_statistics():
 
 @app.route('/history', methods=['GET'])
 def get_history():
-    """Lấy lịch sử events"""
     global service
     
     with service_lock:
@@ -98,9 +80,8 @@ def get_history():
                 'error': 'Service not initialized'
             }), 503
         
-        # Lấy limit từ query parameter (mặc định 50)
         limit = request.args.get('limit', default=50, type=int)
-        limit = max(1, min(limit, 1000))  # Giới hạn 1-1000
+        limit = max(1, min(limit, 1000))
         
         history = service.get_history(limit=limit)
         
@@ -113,7 +94,6 @@ def get_history():
 
 @app.route('/start', methods=['POST'])
 def start_service():
-    """Khởi động service"""
     global service
     
     with service_lock:
@@ -123,18 +103,15 @@ def start_service():
                 'message': 'Service is already running'
             }), 400
         
-        # Get config from request body
         data = request.get_json() or {}
         enable_led = data.get('enable_led', True)
         enable_audio = data.get('enable_audio_classification', True)
         
-        # Khởi tạo service mới
         service = SoundDetectionService(
             enable_led=enable_led,
             enable_audio_classification=enable_audio
         )
         
-        # Khởi động
         if service.start():
             return jsonify({
                 'success': True,
@@ -154,7 +131,6 @@ def start_service():
 
 @app.route('/stop', methods=['POST'])
 def stop_service():
-    """Dừng service"""
     global service
     
     with service_lock:
@@ -175,7 +151,6 @@ def stop_service():
 
 @app.route('/led/brightness', methods=['POST'])
 def set_led_brightness():
-    """Đổi độ sáng LED"""
     global service
     
     with service_lock:
@@ -191,7 +166,6 @@ def set_led_brightness():
                 'message': 'LED visualization is not enabled'
             }), 400
         
-        # Get brightness from request body
         data = request.get_json()
         if not data or 'brightness' not in data:
             return jsonify({
@@ -217,7 +191,6 @@ def set_led_brightness():
 
 @app.route('/led/pattern', methods=['POST'])
 def set_led_pattern():
-    """Đổi LED pattern"""
     global service
     
     with service_lock:
@@ -233,7 +206,6 @@ def set_led_pattern():
                 'message': 'LED visualization is not enabled'
             }), 400
         
-        # Get pattern from request body
         data = request.get_json()
         if not data or 'pattern' not in data:
             return jsonify({
@@ -259,7 +231,6 @@ def set_led_pattern():
 
 @app.route('/led/off', methods=['POST'])
 def turn_off_led():
-    """Tắt LED"""
     global service
     
     with service_lock:
@@ -285,7 +256,6 @@ def turn_off_led():
 
 @app.route('/health', methods=['GET'])
 def health_check():
-    """Health check endpoint"""
     global service
     
     with service_lock:
@@ -297,15 +267,6 @@ def health_check():
 
 
 def run_api(host='0.0.0.0', port=5000, debug=False, auto_start_service=True):
-    """
-    Chạy API server
-    
-    Args:
-        host: Host để bind (mặc định 0.0.0.0 = tất cả interfaces)
-        port: Port (mặc định 5000)
-        debug: Debug mode
-        auto_start_service: Tự động khởi động service khi start API
-    """
     global service
     
     print("=" * 60)
@@ -317,7 +278,6 @@ def run_api(host='0.0.0.0', port=5000, debug=False, auto_start_service=True):
     print(f"  Auto-start service: {auto_start_service}")
     print()
     
-    # Auto start service nếu được yêu cầu
     if auto_start_service:
         print("🚀 Auto-starting sound detection service...")
         service = SoundDetectionService(
@@ -331,7 +291,6 @@ def run_api(host='0.0.0.0', port=5000, debug=False, auto_start_service=True):
             service = None
         print()
     
-    # Chạy Flask app
     try:
         print("🌐 API server is running!")
         print(f"   Access at: http://{host}:{port}")
@@ -343,17 +302,15 @@ def run_api(host='0.0.0.0', port=5000, debug=False, auto_start_service=True):
         app.run(host=host, port=port, debug=debug, use_reloader=False)
         
     except KeyboardInterrupt:
-        print("\n\n⏹️  Đang dừng API server...")
+        print("\n\nStopping API server...")
     finally:
-        # Cleanup
         if service and service.is_running:
             print("🧹 Stopping service...")
             service.stop()
-        print("👋 Goodbye!")
+        print("Goodbye!")
 
 
 if __name__ == '__main__':
-    # Chạy API với cấu hình mặc định
     run_api(
         host='0.0.0.0',
         port=5000,

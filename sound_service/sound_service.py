@@ -1,12 +1,4 @@
-"""
-Sound Detection Service
-Service chính tích hợp tất cả modules:
-- Sound Detector (VAD, DOA)
-- Audio Classifier (phân loại âm thanh)
-- LED Visualizer (hiển thị LED)
-
-Chạy liên tục để monitor và hiển thị real-time
-"""
+"""Sound Detection Service - Main integration module"""
 
 import time
 import threading
@@ -21,46 +13,30 @@ from led_visualizer import LEDVisualizer
 
 
 class SoundDetectionService:
-    """
-    Service chính kết hợp tất cả tính năng
-    """
     
     def __init__(self, 
                  enable_led: bool = True,
                  enable_audio_classification: bool = True,
                  history_size: int = 100):
-        """
-        Khởi tạo service
-        
-        Args:
-            enable_led: Bật/tắt LED visualization
-            enable_audio_classification: Bật/tắt phân loại âm thanh
-            history_size: Số lượng events lưu trong history
-        """
-        # Components
         self.sound_detector = SoundDetector()
         self.audio_classifier = AudioClassifier() if enable_audio_classification else None
         self.led_visualizer = LEDVisualizer() if enable_led else None
         
-        # Configuration
         self.enable_led = enable_led
         self.enable_audio_classification = enable_audio_classification
         
-        # State
         self.is_running = False
         self.thread = None
         
-        # History
         self.history = deque(maxlen=history_size)
         self.statistics = {
             'total_detections': 0,
             'vad_count': 0,
             'speech_count': 0,
             'sound_types': {st.value: 0 for st in SoundType},
-            'direction_histogram': [0] * 12  # 12 bins cho 12 LEDs
+            'direction_histogram': [0] * 12
         }
         
-        # Current state
         self.current_state = {
             'vad': False,
             'speech': False,
@@ -70,31 +46,24 @@ class SoundDetectionService:
         }
 
     def start(self) -> bool:
-        """
-        Khởi động service
-        Returns: True nếu thành công
-        """
         print("=" * 60)
-        print("🚀 Starting Sound Detection Service...")
+        print("Starting Sound Detection Service...")
         print("=" * 60)
         
-        # Kết nối sound detector
         if not self.sound_detector.connect():
-            print("❌ Không thể khởi động: Không kết nối được với ReSpeaker")
+            print("Failed to start: Cannot connect to ReSpeaker")
             return False
         
-        # Khởi động audio stream (nếu enable)
         if self.enable_audio_classification:
             if not self.audio_classifier.start_stream():
-                print("⚠️  Không thể khởi động audio stream, tắt audio classification")
+                print("Warning: Cannot start audio stream, disabling audio classification")
                 self.enable_audio_classification = False
         
-        # Khởi động thread
         self.is_running = True
         self.thread = threading.Thread(target=self._run_loop, daemon=True)
         self.thread.start()
         
-        print("✅ Service đã khởi động thành công!")
+        print("Service started successfully!")
         print(f"   - LED Visualization: {'ON' if self.enable_led else 'OFF'}")
         print(f"   - Audio Classification: {'ON' if self.enable_audio_classification else 'OFF'}")
         print()
