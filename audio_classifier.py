@@ -48,7 +48,7 @@ class AudioClassifier:
             if device_info.get('maxInputChannels') > 0:
                 name = device_info.get('name')
                 if 'ReSpeaker' in name or 'UAC1.0' in name:
-                    print(f"✅ Tìm thấy ReSpeaker: {name} (index: {i})")
+                    print(f"Found ReSpeaker: {name} (index: {i})")
                     return i
         
         print("Warning: ReSpeaker not found, using default device")
@@ -118,11 +118,9 @@ class AudioClassifier:
         return zcr
 
     def calculate_spectral_centroid(self, audio_data: np.ndarray) -> float:
-        # FFT để lấy phổ tần số
         spectrum = np.abs(np.fft.rfft(audio_data))
         freqs = np.fft.rfftfreq(len(audio_data), 1/self.RATE)
         
-        # Tính centroid
         if np.sum(spectrum) == 0:
             return 0
         
@@ -168,22 +166,15 @@ class AudioClassifier:
         rms = features['rms']
         zcr = features['zcr']
         
-        # Rule 1: Silence detection
         if rms < self.SILENCE_THRESHOLD:
             return SoundType.SILENCE
         
-        # Rule 2: Speech detection
-        # Speech có ZCR trung bình, RMS dao động
         if self.SPEECH_ZCR_MIN < zcr < self.SPEECH_ZCR_MAX:
             return SoundType.SPEECH
         
-        # Rule 3: Music detection
-        # Music có ZCR thấp, mượt mà hơn
         if self.MUSIC_ZCR_MIN < zcr < self.MUSIC_ZCR_MAX and rms > self.SILENCE_THRESHOLD * 2:
             return SoundType.MUSIC
         
-        # Rule 4: Noise
-        # ZCR rất cao hoặc không đều
         if zcr > self.SPEECH_ZCR_MAX:
             return SoundType.NOISE
         
@@ -241,16 +232,15 @@ class AudioClassifier:
                 time.sleep(max(0, interval - (time.time() - start_time) % interval))
                 
         except KeyboardInterrupt:
-            print("\n⏹️  Đã dừng phân tích")
+            print("\nStopped analysis")
         
-        # Thống kê
         print("\n" + "=" * 60)
-        print("📊 THỐNG KÊ:")
+        print("STATISTICS:")
         total = sum(sound_counts.values())
         for sound_type, count in sound_counts.items():
             if total > 0:
                 percent = (count / total) * 100
-                print(f"  {sound_type.value:8}: {count:3} lần ({percent:5.1f}%)")
+                print(f"  {sound_type.value:8}: {count:3} times ({percent:5.1f}%)")
 
     def classify_continuous(self, duration: int = 10):
         """
@@ -307,43 +297,37 @@ class AudioClassifier:
         wf.writeframes(b''.join(frames))
         wf.close()
         
-        print(f"✅ Đã lưu: {filename}")
+        print(f"Saved: {filename}")
 
     def cleanup(self):
-        """Dọn dẹp resources"""
+        """Cleanup resources"""
         self.stop_stream()
         self.p.terminate()
-        print("🧹 Đã dọn dẹp resources")
+        print("Resources cleaned")
     
     def stop(self):
-        """Alias for cleanup - for compatibility"""
+        """Alias for cleanup"""
         self.cleanup()
 
 
 def main():
-    """Demo sử dụng AudioClassifier"""
+    """AudioClassifier demo"""
     print("=" * 60)
-    print("🎵 ReSpeaker Audio Classifier Demo")
+    print("ReSpeaker Audio Classifier Demo")
     print("=" * 60)
     
     classifier = AudioClassifier()
     
-    # Liệt kê devices
     classifier.list_audio_devices()
     
-    # Bắt đầu stream
     if not classifier.start_stream():
         return
     
     try:
-        # Phân tích liên tục
         classifier.analyze_continuous(duration=30, interval=0.5)
         
-        # Ghi âm demo (optional)
-        # classifier.record_to_file("test_recording.wav", duration=5)
-        
     except KeyboardInterrupt:
-        print("\n\n⏹️  Đã dừng")
+        print("\n\nStopped")
     finally:
         classifier.cleanup()
 

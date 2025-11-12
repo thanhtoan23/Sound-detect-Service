@@ -27,15 +27,15 @@ def print_header(text, style="bold cyan"):
 
 
 def print_error(text):
-    console.print(f"[bold red]✗[/bold red] {text}")
+    console.print(f"[bold red]ERROR:[/bold red] {text}")
 
 
 def print_success(text):
-    console.print(f"[bold green]✓[/bold green] {text}")
+    console.print(f"[bold green]SUCCESS:[/bold green] {text}")
 
 
 def print_info(text):
-    console.print(f"[blue]ℹ[/blue] {text}")
+    console.print(f"[blue]INFO:[/blue] {text}")
 
 
 def cmd_start(args):
@@ -60,91 +60,102 @@ def cmd_start(args):
         if args.monitor:
             console.print("\n[yellow]Monitor Mode[/yellow] (Press Ctrl+C to stop)\n")
             monitor_service_live(service)
+            service.stop()
+            print_success("Service stopped")
         else:
             print_info("Service running in background. Use 'monitor' command to view status.")
             
     except KeyboardInterrupt:
         console.print("\n[yellow]Stopping service...[/yellow]")
         if 'service' in locals():
-            service.stop()
+            try:
+                service.stop()
+            except:
+                pass
         print_success("Service stopped")
     except Exception as e:
         print_error(f"Failed to start service: {e}")
+        if 'service' in locals():
+            try:
+                service.stop()
+            except:
+                pass
         sys.exit(1)
 
 
 def monitor_service_live(service):
-    """Live monitor with beautiful UI"""
+    """Simple monitor - print each line continuously"""
     
-    def create_status_table():
-        """Create status display table"""
+    console.print("\n[bold cyan]═══════════════════════════════════════════════════[/bold cyan]")
+    console.print("[bold]VAD | Volume (RMS) | Direction | Sound Type[/bold]")
+    console.print("[bold cyan]═══════════════════════════════════════════════════[/bold cyan]")
+    
+    try:
+        while True:
+            status = service.get_current_state()
+            
+            vad = "Yes" if status.get('vad') else "No "
+            
+            rms = status.get('rms', 0)
+            
+            dir_val = status.get('direction')
+            direction = f"{dir_val:>3}°" if dir_val is not None else " N/A"
+            
+            sound_type = status.get('sound_type', 'unknown').upper()
+            
+            color = {
+                'SPEECH': 'green',
+                'MUSIC': 'blue',
+                'NOISE': 'red',
+                'SILENCE': 'dim',
+                'UNKNOWN': 'yellow'
+            }.get(sound_type, 'white')
+            
+            console.print(f"{vad:3} | {rms:13.0f} | {direction:9} | [{color}]{sound_type:12}[/{color}]")
+            
+            time.sleep(config.MONITOR_REFRESH_RATE)
+            
+    except KeyboardInterrupt:
+        console.print("\n[bold cyan]═══════════════════════════════════════════════════[/bold cyan]")
+        console.print("[bold yellow]STATISTICS[/bold yellow]")
+        console.print("[bold cyan]═══════════════════════════════════════════════════[/bold cyan]\n")
+        
+        stats = service.get_statistics()
+        total = stats.get('total_detections', 0)
+        
         table = Table(show_header=True, header_style="bold magenta", box=box.ROUNDED)
-        table.add_column("🎤 VAD", style="cyan", width=10)
-        table.add_column("🗣️ Speech", style="yellow", width=10)
-        table.add_column("🧭 Direction", style="green", width=12)
-        table.add_column("🎵 Sound Type", style="blue", width=15)
-        table.add_column("📊 Count", style="magenta", width=10)
-        
-        status = service.get_current_state()
-        stats = service.get_statistics()
-        
-        vad = "🔴 Yes" if status.get('vad') else "⚪ No"
-        speech = "✓" if status.get('speech') else "✗"
-        direction = f"{status.get('direction', 'N/A')}°"
-        sound_type = status.get('sound_type', 'unknown').upper()
-        count = stats.get('total_detections', 0)
-        
-        sound_color = {
-            'SPEECH': 'green',
-            'MUSIC': 'blue', 
-            'NOISE': 'red',
-            'SILENCE': 'dim',
-            'UNKNOWN': 'white'
-        }.get(sound_type, 'white')
-        
-        table.add_row(
-            vad,
-            speech,
-            direction,
-            f"[{sound_color}]{sound_type}[/{sound_color}]",
-            str(count)
-        )
-        
-        return table
-    
-    def create_stats_panel():
-        """Create statistics panel"""
-        stats = service.get_statistics()
-        
-        text = Text()
-        text.append("📈 Statistics\n\n", style="bold cyan")
+        table.add_column("Sound Type", style="cyan", width=15)
+        table.add_column("Count", style="green", width=10, justify="right")
+        table.add_column("Percentage", style="yellow", width=12, justify="right")
+        table.add_column("Bar", style="blue", width=30)
         
         for sound_type, count in stats.get('by_type', {}).items():
             percentage = stats.get('percentages', {}).get(sound_type, 0)
-            bar = "█" * int(percentage / 5)
-            text.append(f"{sound_type:8} ", style="white")
-            text.append(f"{bar:20} ", style="green")
-            text.append(f"{count:3} ({percentage:.1f}%)\n", style="dim")
+            bar = "█" * int(percentage / 3)
+            
+            color = {
+                'speech': 'green',
+                'music': 'blue',
+                'noise': 'red',
+                'silence': 'white',
+                'unknown': 'yellow'
+            }.get(sound_type, 'white')
+            
+            table.add_row(
+                f"[{color}]{sound_type.upper()}[/{color}]",
+                str(count),
+                f"{percentage:.1f}%",
+                f"[{color}]{bar}[/{color}]"
+            )
         
-        return Panel(text, box=box.ROUNDED, border_style="cyan")
-    
-    try:
-        with Live(create_status_table(), refresh_per_second=2, console=console) as live:
-            while True:
-                layout = Layout()
-                layout.split_column(
-                    Layout(create_status_table(), size=6),
-                    Layout(create_stats_panel())
-                )
-                live.update(layout)
-                time.sleep(config.MONITOR_REFRESH_RATE)
-    except KeyboardInterrupt:
+        console.print(table)
+        console.print(f"\n[bold]Total detections: {total}[/bold]")
         console.print("\n[yellow]Monitor stopped[/yellow]")
 
 
 def cmd_status(args):
     """Show device status"""
-    print_header("📊 Device Status")
+    print_header("Device Status")
     
     try:
         detector = SoundDetector()
@@ -154,12 +165,12 @@ def cmd_status(args):
         table.add_column("Property", style="cyan")
         table.add_column("Value", style="green")
         
-        table.add_row("🔌 Connection", "✓ Connected" if detector.connected else "✗ Not Connected")
+        table.add_row("Connection", "Connected" if detector.connected else "Not Connected")
         
         if detector.connected:
-            table.add_row("🎤 VAD", "Active" if detector.is_voice_detected() else "Inactive")
-            table.add_row("🧭 Direction", f"{detector.get_direction()}°")
-            table.add_row("📡 Device", "ReSpeaker Mic Array v2.0")
+            table.add_row("VAD", "Active" if detector.is_voice_detected() else "Inactive")
+            table.add_row("Direction", f"{detector.get_direction()}°")
+            table.add_row("Device", "ReSpeaker Mic Array v2.0")
         
         console.print(table)
         detector.disconnect()
@@ -171,7 +182,7 @@ def cmd_status(args):
 
 def cmd_test_vad(args):
     """Test VAD and DOA"""
-    print_header("🎤 Testing VAD & DOA")
+    print_header("Testing VAD & DOA")
     
     try:
         detector = SoundDetector()
@@ -190,8 +201,8 @@ def cmd_test_vad(args):
             status = detector.get_status()
             timestamp = time.strftime("%H:%M:%S")
             
-            vad = "🔴" if status['vad'] else "⚪"
-            speech = "✓" if status['speech'] else "✗"
+            vad = "YES" if status['vad'] else "NO"
+            speech = "YES" if status['speech'] else "NO"
             direction = f"{status['direction']}°" if status['direction'] else "N/A"
             
             vad_color = "red" if status['vad'] else "dim"
@@ -200,7 +211,6 @@ def cmd_test_vad(args):
             detections.append(status)
             time.sleep(0.5)
         
-        # Summary
         console.print("\n" + "─" * 50)
         vad_count = sum(1 for d in detections if d['vad'])
         speech_count = sum(1 for d in detections if d['speech'])
@@ -209,9 +219,9 @@ def cmd_test_vad(args):
         table.add_column("Metric", style="cyan")
         table.add_column("Value", style="green")
         
-        table.add_row("📊 Total samples", str(len(detections)))
-        table.add_row("🔴 VAD detections", f"{vad_count} ({vad_count/len(detections)*100:.1f}%)")
-        table.add_row("🗣️ Speech detections", f"{speech_count} ({speech_count/len(detections)*100:.1f}%)")
+        table.add_row("Total samples", str(len(detections)))
+        table.add_row("VAD detections", f"{vad_count} ({vad_count/len(detections)*100:.1f}%)")
+        table.add_row("Speech detections", f"{speech_count} ({speech_count/len(detections)*100:.1f}%)")
         
         console.print(table)
         detector.disconnect()
@@ -223,7 +233,7 @@ def cmd_test_vad(args):
 
 def cmd_test_audio(args):
     """Test audio classification"""
-    print_header("🎵 Testing Audio Classification")
+    print_header("Testing Audio Classification")
     
     try:
         classifier = AudioClassifier()
@@ -275,9 +285,8 @@ def cmd_test_audio(args):
         if detector_available:
             detector.disconnect()
         
-        # Summary
         console.print("\n" + "═" * 60)
-        console.print("[bold cyan]📊 SUMMARY[/bold cyan]")
+        console.print("[bold cyan]SUMMARY[/bold cyan]")
         console.print("═" * 60 + "\n")
         
         table = Table(show_header=True, header_style="bold magenta", box=box.ROUNDED)
@@ -315,7 +324,7 @@ def cmd_test_audio(args):
 
 def cmd_record(args):
     """Record audio to file"""
-    print_header(f"🎙️ Recording to {args.output}")
+    print_header(f"Recording to {args.output}")
     
     try:
         classifier = AudioClassifier()
@@ -349,23 +358,18 @@ Examples:
     
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
     
-    # Start command
     start_parser = subparsers.add_parser('start', help='Start the service')
     start_parser.add_argument('--monitor', action='store_true', help='Monitor mode')
     start_parser.add_argument('--no-classifier', action='store_true', help='Disable audio classification')
     
-    # Status command
     subparsers.add_parser('status', help='Show device status')
     
-    # Test VAD command
     test_vad_parser = subparsers.add_parser('test-vad', help='Test VAD & DOA')
     test_vad_parser.add_argument('--duration', type=int, default=10, help='Duration in seconds')
     
-    # Test audio command
     test_audio_parser = subparsers.add_parser('test-audio', help='Test audio classification')
     test_audio_parser.add_argument('--duration', type=int, default=10, help='Duration in seconds')
     
-    # Record command
     record_parser = subparsers.add_parser('record', help='Record audio to file')
     record_parser.add_argument('output', help='Output WAV file')
     record_parser.add_argument('--duration', type=int, default=5, help='Duration in seconds')
@@ -376,7 +380,6 @@ Examples:
         parser.print_help()
         sys.exit(1)
     
-    # Execute command
     commands = {
         'start': cmd_start,
         'status': cmd_status,

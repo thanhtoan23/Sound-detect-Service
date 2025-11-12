@@ -38,6 +38,7 @@ class SoundDetectionService:
             'speech': False,
             'direction': None,
             'sound_type': SoundType.UNKNOWN,
+            'rms': 0,
             'timestamp': None
         }
 
@@ -66,8 +67,8 @@ class SoundDetectionService:
         return True
 
     def stop(self):
-        """Dừng service"""
-        print("\n⏹️  Đang dừng service...")
+        """Stop the service"""
+        print("\nStopping service...")
         
         self.is_running = False
         
@@ -83,46 +84,46 @@ class SoundDetectionService:
         print("Service stopped")
 
     def _run_loop(self):
-        """Main loop chạy trong thread"""
-        print("🔄 Service loop đang chạy...")
+        """Main service loop"""
+        print("Service loop running...")
         
         while self.is_running:
             try:
-                # 1. Lấy thông tin từ hardware
+                # Get hardware status
                 vad = self.sound_detector.is_voice_detected()
                 speech = self.sound_detector.is_speech_detected()
                 direction = self.sound_detector.get_direction()
                 
-                # 2. Phân loại âm thanh (nếu enable)
+                # Classify audio
                 sound_type = SoundType.UNKNOWN
+                rms = 0
+                
                 if self.enable_audio_classification:
-                    audio_data = self.audio_classifier.read_audio_chunk()
-                    if audio_data is not None:
-                        sound_type = self.audio_classifier.classify_sound(audio_data)
+                    sound_type, features = self.audio_classifier.classify_audio()
+                    rms = features.get('rms', 0)
                 else:
-                    # Fallback: dùng VAD để phân loại đơn giản
+                    # Fallback: VAD-based classification
                     if vad:
                         sound_type = SoundType.SPEECH
                     else:
                         sound_type = SoundType.SILENCE
                 
-                # 3. Update state
+                # Update current state
                 self.current_state = {
                     'vad': vad,
                     'speech': speech,
                     'direction': direction,
                     'sound_type': sound_type,
+                    'rms': rms,
                     'timestamp': datetime.now()
                 }
                 
-                # 4. Update statistics
                 self._update_statistics(self.current_state)
                 
-                # 5. Save to history (chỉ khi có thay đổi quan trọng)
+                # Save to history (only significant events)
                 if vad or sound_type != SoundType.SILENCE:
                     self._add_to_history(self.current_state)
                 
-                # 6. Sleep một chút
                 time.sleep(0.1)
                 
             except Exception as e:
@@ -149,7 +150,7 @@ class SoundDetectionService:
             self.statistics['direction_histogram'][led_bin] += 1
 
     def _add_to_history(self, state: Dict):
-        """Thêm vào history"""
+        """Add event to history"""
         event = {
             'timestamp': state['timestamp'].isoformat(),
             'vad': state['vad'],
@@ -168,25 +169,19 @@ class SoundDetectionService:
         return state
 
     def get_statistics(self) -> Dict:
-        """Lấy thống kê"""
+        """Get statistics"""
         return self.statistics.copy()
 
     def get_history(self, limit: int = 50) -> List[Dict]:
-        """
-        Lấy history
-        Args:
-            limit: Số lượng events tối đa
-        Returns:
-            List of events
-        """
+        """Get event history"""
         return list(self.history)[-limit:]
 
     def print_status(self):
-        """In status ra console (tiện cho debugging)"""
+        """Print current status to console"""
         state = self.current_state
         
-        vad_icon = "🔴" if state['vad'] else "⚫"
-        speech_icon = "🗣️" if state['speech'] else "🤫"
+        vad_icon = "[VAD]" if state['vad'] else "[ - ]"
+        speech_icon = "[SPEECH]" if state['speech'] else "[  -   ]"
         direction = state['direction'] if state['direction'] is not None else "N/A"
         
         sound_type = state['sound_type']
@@ -195,28 +190,15 @@ class SoundDetectionService:
         else:
             sound_type_str = str(sound_type)
         
-        emoji_map = {
-            'silence': '🤫',
-            'speech': '🗣️',
-            'music': '🎵',
-            'noise': '🔊',
-            'unknown': '❓'
-        }
-        type_icon = emoji_map.get(sound_type_str, '❓')
-        
         print(f"{vad_icon} VAD | "
               f"{speech_icon} Speech | "
-              f"🧭 {direction}° | "
-              f"{type_icon} {sound_type_str.upper()}")
+              f"Dir: {direction}° | "
+              f"Type: {sound_type_str.upper()}")
 
     def monitor_console(self, interval: float = 0.5):
-        """
-        Monitor và in ra console
-        Args:
-            interval: Khoảng cách giữa các lần in (giây)
-        """
+        """Monitor and print to console"""
         print("\n" + "=" * 60)
-        print("📊 MONITOR MODE (Nhấn Ctrl+C để dừng)")
+        print("MONITOR MODE (Press Ctrl+C to stop)")
         print("=" * 60)
         
         try:
@@ -224,60 +206,50 @@ class SoundDetectionService:
                 self.print_status()
                 time.sleep(interval)
         except KeyboardInterrupt:
-            print("\n⏹️  Đã dừng monitor")
+            print("\nMonitor stopped")
 
 
 def main():
-    """Demo chạy service"""
+    """Demo service"""
     print("=" * 60)
-    print("🎤 ReSpeaker Sound Detection Service")
+    print("ReSpeaker Sound Detection Service")
     print("=" * 60)
     
-    # Khởi tạo service
     service = SoundDetectionService(
-        enable_led=True,
         enable_audio_classification=True,
         history_size=100
     )
     
-    # Khởi động
     if not service.start():
-        print("❌ Không thể khởi động service")
+        print("Cannot start service")
         return
     
     try:
-        # Monitor console
         service.monitor_console(interval=0.5)
         
-        # Hoặc chỉ đợi
-        # while True:
-        #     time.sleep(1)
-        
     except KeyboardInterrupt:
-        print("\n\n⏹️  Nhận tín hiệu dừng")
+        print("\n\nStopping...")
     finally:
-        # Dừng service
         service.stop()
         
-        # In statistics
         print("\n" + "=" * 60)
-        print("📊 THỐNG KÊ:")
+        print("STATISTICS:")
         print("=" * 60)
         stats = service.get_statistics()
-        print(f"  Tổng detections: {stats['total_detections']}")
+        print(f"  Total detections: {stats['total_detections']}")
         print(f"  VAD triggers: {stats['vad_count']}")
         print(f"  Speech detections: {stats['speech_count']}")
-        print(f"\n  Phân bố loại âm thanh:")
+        print(f"\n  Sound type distribution:")
         for sound_type, count in stats['sound_types'].items():
             if count > 0:
                 print(f"    {sound_type:8}: {count}")
-        print(f"\n  Phân bố hướng (histogram):")
+        print(f"\n  Direction distribution:")
         for i, count in enumerate(stats['direction_histogram']):
             angle = i * 30
             bar = '█' * int(count / 10) if count > 0 else ''
-            print(f"    {angle:3}°: {bar} ({count})")
+            print(f"    {angle:3}: {bar} ({count})")
         
-        print("\n👋 Tạm biệt!")
+        print("\nGoodbye!")
 
 
 if __name__ == '__main__':
