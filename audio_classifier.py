@@ -162,7 +162,6 @@
         
 #         if not features:
 #             return SoundType.UNKNOWN
-        
 #         rms = features['rms']
 #         zcr = features['zcr']
         
