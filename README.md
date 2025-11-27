@@ -32,7 +32,9 @@ Sound detection and classification service for ReSpeaker Mic Array v2.0
 ---
 
 ## Requirements
+'''
 
+'''
 ### Hardware
 - ReSpeaker Mic Array v2.0 (USB version)
 - USB port
@@ -241,6 +243,11 @@ python cli.py test-vad --duration 10
 **Test Audio Classification (no driver required)**
 ```bash
 python cli.py test-audio --duration 10
+```
+
+**Test Environment Classification**
+```bash
+python audio_classification.py
 ```
 
 **Record Audio**
