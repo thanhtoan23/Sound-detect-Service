@@ -1,0 +1,60 @@
+\documentclass[twoside, final]{hcmut_report}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{xcolor}
+
+% Định nghĩa màu (giống giao diện VS Code hoặc Sublime Text)
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92} % Màu nền xám nhẹ
+
+% Thiết lập style chung
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   % Màu nền
+    commentstyle=\color{codegreen},       % Màu comment
+    keywordstyle=\color{magenta},         % Màu từ khóa (if, else, for...)
+    numberstyle=\tiny\color{codegray},    % Màu số dòng
+    stringstyle=\color{codepurple},       % Màu chuỗi string "..."
+    basicstyle=\ttfamily\footnotesize,    % Font chữ
+    breakatwhitespace=false,
+    breaklines=true,                      % Tự động xuống dòng nếu quá dài
+    captionpos=b,                         % Vị trí tiêu đề (b = bottom, t = top)
+    keepspaces=true,                      % Giữ nguyên khoảng trắng
+    numbers=left,                         % Hiển thị số dòng bên trái
+    numbersep=5pt,                        % Khoảng cách số dòng với code
+    showspaces=false,                     % Không hiển thị dấu space
+    showstringspaces=false,               % Không hiển thị dấu space trong chuỗi
+    showtabs=false,                       % Không hiển thị dấu tab
+    tabsize=2,                            % Độ rộng tab
+    frame=single                          % Kẻ khung viền quanh code
+}
+
+% Áp dụng style này cho toàn bộ văn bản
+\lstset{style=mystyle}
+% Configuration
+\upperuniname{ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH}
+\uniname{TRƯỜNG ĐẠI HỌC BÁCH KHOA}
+\deptname{KHOA KHOA HỌC VÀ KỸ THUẬT MÁY TÍNH}
+\geometry{twoside=false}
+\coursename{Đồ án Thiết kế luận lý - CO3091}
+\reporttype{Báo cáo cuối kỳ}
+\title{Đề tài: Phân loại âm thanh dùng Respeaker}
+\advisor{
+    Phạm Hoàng Anh
+}
+\student{
+    Trương Thiên Ân,    2310190
+    Nguyễn Thái Sơn ,   2312968
+    Nguyễn Thanh Toàn,  2313492
+    Lê Công Vinh,       2313912
+}
+\begin{document}
+\coverpage
+\pagestyle{empty}
+\tableofcontents
+\pagestyle{fancy}
+\pagebreak
+\include{contents/sect1}
+
+\end{document}
