@@ -2,6 +2,24 @@
 
 Sound detection and classification service for ReSpeaker Mic Array v2.0
 
+## RUN
+```bash
+python3 gui_app.py
+```
+## MAKE .exe
+### Step 1:
+```bash
+pyinstaller build.spec
+```
+### Step 2:
+```bash
+Double click SmartAudioMonitor_Final.exe in folder dist 
+```
+
+
+
+
+
 ## Table of Contents
 
 - [Features](#features)
