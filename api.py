@@ -281,7 +281,7 @@ def run_api(host='0.0.0.0', port=5000, debug=False, auto_start_service=True):
     if auto_start_service:
         print("🚀 Auto-starting sound detection service...")
         service = SoundDetectionService(
-            enable_led=True,
+            #enable_led=True,
             enable_audio_classification=True
         )
         if service.start():
