@@ -35,30 +35,29 @@ ENV_DURATION_SEC = 5.0
 ENV_SAMPLES = int(DEFAULT_RATE * ENV_DURATION_SEC)
 
 # lấy bao nhiêu giây cuối trong buffer để predict (segment ngắn hơn vẫn OK vì preprocess sẽ pad/cắt về 5s)
-ENV_WINDOW_DURATION_SEC = 3.0
+ENV_WINDOW_DURATION_SEC = 2.0
 ENV_WINDOW_SAMPLES = int(DEFAULT_RATE * ENV_WINDOW_DURATION_SEC)
 
 # Ngưỡng gọi model
 ENV_MIN_RMS = 0.005
 
 # Threshold quyết định unknown
-ENV_CONF_THRESHOLD = 0.58
+ENV_CONF_THRESHOLD = 0.5
 ENV_UNKNOWN_LABEL = "unknown"
 
 # ===== Smoothing =====
 ENV_SMOOTH_K = 3            # 3–7 hợp lý
-ENV_PRED_HOP_SEC = 0.25     # predict mỗi 0.5s
+ENV_PRED_HOP_SEC = 0.5     # predict mỗi 0.5s
 
 # ===== Switching / Reset =====
 ENV_RESET_ON_SILENCE_SEC = 0.8  # rms thấp liên tục > 0.8s => reset buffer+history
-ENV_SWITCH_CONF = 0.75         # label mới raw_conf >= 0.75 => xem là đủ mạnh để switch nhanh
+ENV_SWITCH_CONF = 0.60         # label mới raw_conf >= 0.75 => xem là đủ mạnh để switch nhanh
 ENV_SWITCH_STREAK = 2           # cần 2 lần liên tiếp để switch (chống nhảy)
 
 # ===== Model file name =====
 ENV_MODEL_FILENAME = "audio_cnn_best.h5"
 ENV_MODEL_PATH = get_resource_path(ENV_MODEL_FILENAME)
 
-# IMPORTANT: đúng thứ tự classes lúc train (npz classes)
 ENV_CLASSES = [
     "car_horn",
     "cat",
