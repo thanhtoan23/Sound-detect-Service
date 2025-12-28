@@ -371,8 +371,6 @@ class AudioClassifier:
     def classify_audio(self) -> Tuple[Optional[str], float, float]:
         """Đọc 1 chunk từ mic rồi classify_chunk()."""
         chunk = self.read_audio_chunk()
-        if chunk is None:
-            return SoundType.UNKNOWN, {}
         return self.classify_chunk(chunk)
 
 

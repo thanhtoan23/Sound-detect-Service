@@ -26,7 +26,7 @@ a = Analysis(
     ['gui_app.py'],
     pathex=[current_dir], # <--- QUAN TRỌNG: Ép PyInstaller tìm file ở đây
     binaries=[],
-    datas=[('env_sounds_cnn_11cls.h5', '.')],
+    datas=[('audio_cnn_best.h5', '.')],
     hiddenimports=my_hidden_imports,
     hookspath=[],
     hooksconfig={},
