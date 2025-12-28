@@ -10,7 +10,6 @@ import sys
 # Import module hệ thống của bạn
 from smart_audio_pipeline import SmartAudioSystem
 from sound_detector import SoundDetector
-from audio_classifier import SoundType
 
 # --- COLOR PALETTE ---
 COLOR_BG_MAIN = "#050a14"

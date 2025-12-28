@@ -25,7 +25,7 @@
         └────┬─────────────────────┬─────────┘
              │                     │
       ┌──────▼──────┐      ┌──────▼──────────┐
-      │ AudioProcessor  │      │ AudioClassifier   │
+      │AudioProcessor│     │ AudioClassifier │
       │(Lọc nhiễu, AGC)│      │(Phân loại AI)     │
       └──────────────┘      └──────────────────┘
              │                     │

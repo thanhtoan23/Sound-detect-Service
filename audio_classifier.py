@@ -1,4 +1,3 @@
-import enum
 import time
 from typing import Optional, Dict, Any, Tuple
 from collections import deque
@@ -77,15 +76,9 @@ ENV_CLASSES = [
 
 
 # ============================================================
-#                     KIỂU LOẠI ÂM THANH
+#                     KIỂU LOẠI ÂM THANH (AI ONLY)
 # ============================================================
-
-class SoundType(enum.Enum):
-    UNKNOWN = "unknown"
-    SILENCE = "silence"
-    SPEECH = "speech"
-    MUSIC = "music"
-    NOISE = "noise"
+# Removed SoundType enum - using AI classification exclusively
 
 
 # ============================================================
@@ -235,16 +228,6 @@ class AudioClassifier:
         self.is_recording = False
         print("[AudioClassifier] Stopped.")
 
-    # alias tương thích code cũ
-    def start_stream(self):
-        self.start()
-
-    def stop_stream(self):
-        self.stop()
-
-    def cleanup(self):
-        self.stop()
-
     # ------------------------- READ AUDIO ----------------------------
 
     def read_audio_chunk(self) -> Optional[np.ndarray]:
@@ -263,54 +246,13 @@ class AudioClassifier:
             print(f"[AudioClassifier] Error reading audio: {e}")
             return None
 
-    # ------------------------- FEATURES ------------------------------
+    # ------------------------- FEATURES (Simple RMS Only) ------------------------------
 
-    def extract_features(self, chunk: np.ndarray) -> Dict[str, float]:
-        features: Dict[str, float] = {}
-        rms = float(np.sqrt(np.mean(chunk ** 2) + 1e-9))
-        features["rms"] = rms
+    def get_rms(self, chunk: np.ndarray) -> float:
+        """Calculate RMS for energy detection only"""
+        return float(np.sqrt(np.mean(chunk ** 2) + 1e-9))
 
-        zcr = librosa.feature.zero_crossing_rate(
-            chunk, frame_length=len(chunk), hop_length=len(chunk)
-        )[0, 0]
-        features["zcr"] = float(zcr)
-
-        S = np.abs(librosa.stft(chunk, n_fft=512, hop_length=max(1, len(chunk)//2), center=False))
-        centroid = librosa.feature.spectral_centroid(S=S, sr=self.RATE)[0, 0]
-        bandwidth = librosa.feature.spectral_bandwidth(S=S, sr=self.RATE)[0, 0]
-        features["centroid"] = float(centroid)
-        features["bandwidth"] = float(bandwidth)
-        return features
-
-    # -------------------- RULE-BASED CLASSIFIER --------------------
-
-    def classify_sound(self, chunk: np.ndarray) -> SoundType:
-        feats = self.extract_features(chunk)
-        rms = feats["rms"]
-        zcr = feats["zcr"]
-        centroid = feats["centroid"]
-
-        SILENCE_RMS_TH = 0.0015
-        SPEECH_RMS_MIN = 0.0015
-        SPEECH_RMS_MAX = 0.02
-
-        SPEECH_ZCR_MIN = 0.01
-        SPEECH_ZCR_MAX = 0.2
-        MUSIC_RMS_MIN = 0.01
-        MUSIC_ZCR_MIN = 0.02
-
-        if rms < SILENCE_RMS_TH:
-            return SoundType.SILENCE
-
-        if SPEECH_RMS_MIN <= rms <= SPEECH_RMS_MAX and SPEECH_ZCR_MIN <= zcr <= SPEECH_ZCR_MAX:
-            return SoundType.SPEECH
-
-        if rms >= MUSIC_RMS_MIN and zcr >= MUSIC_ZCR_MIN and centroid > 1000:
-            return SoundType.MUSIC
-
-        return SoundType.NOISE
-
-    # ------------------ ENV MODEL + SMOOTHING -----------------------
+    # ------------------ AI MODEL + SMOOTHING -----------------------
 
     def _reset_env_state(self):
         self.env_buffer = np.zeros(0, dtype=np.float32)
@@ -384,27 +326,24 @@ class AudioClassifier:
         self._last_env_conf = conf
         return label, conf, True
 
-    # ---------------------- PUBLIC API ------------------------------
+    # ---------------------- PUBLIC API (AI ONLY) ------------------------------
 
-    def classify_chunk(self, chunk: np.ndarray) -> Tuple[SoundType, Dict[str, Any]]:
+    def classify_chunk(self, chunk: np.ndarray) -> Tuple[Optional[str], float, float]:
         """
-        Dùng cho pipeline/GUI: 
-        - sound_type (rule-based)
-        - features có env_label/env_conf
-          * env_label sẽ giữ kết quả gần nhất giữa các hop
-          * nếu conf < ENV_CONF_THRESHOLD => env_label='unknown'
-          * reset khi im lặng đủ lâu
+        AI-based classification only.
+        Returns: (label, confidence, rms)
+        - label: AI predicted class (or None if no prediction)
+        - confidence: prediction confidence (0-1)
+        - rms: audio energy level
         """
         if chunk is None or len(chunk) == 0:
-            return SoundType.UNKNOWN, {}
+            return None, 0.0, 0.0
 
-        features = self.extract_features(chunk)
-        sound_type = self.classify_sound(chunk)
-        rms = float(features.get("rms", 0.0))
+        rms = self.get_rms(chunk)
 
         # ===== Auto reset when silence/low energy =====
         now = time.time()
-        if rms < ENV_MIN_RMS or sound_type == SoundType.SILENCE:
+        if rms < ENV_MIN_RMS:
             if self._low_rms_start_ts is None:
                 self._low_rms_start_ts = now
             elif (now - self._low_rms_start_ts) >= ENV_RESET_ON_SILENCE_SEC:
@@ -415,24 +354,21 @@ class AudioClassifier:
         env_label: Optional[str] = self._last_env_label
         env_conf: float = float(self._last_env_conf)
 
-        if self.env_model is not None and sound_type is not SoundType.SILENCE and rms > ENV_MIN_RMS:
+        # AI Prediction
+        if self.env_model is not None and rms > ENV_MIN_RMS:
             pred_label, pred_conf, updated = self._update_env_buffer_and_predict(chunk)
 
-            # nếu có label (kể cả giữ từ lần trước) thì cập nhật lại
             if pred_label is not None:
                 env_label = pred_label
                 env_conf = float(pred_conf)
 
-                # === RULE bạn muốn: conf < threshold => unknown ===
+                # Apply confidence threshold
                 if env_conf < ENV_CONF_THRESHOLD:
                     env_label = ENV_UNKNOWN_LABEL
 
-        features["env_label"] = env_label
-        features["env_conf"] = float(env_conf)
-        features["rms"] = float(rms)
-        return sound_type, features
+        return env_label, env_conf, rms
 
-    def classify_audio(self) -> Tuple[SoundType, Dict[str, Any]]:
+    def classify_audio(self) -> Tuple[Optional[str], float, float]:
         """Đọc 1 chunk từ mic rồi classify_chunk()."""
         chunk = self.read_audio_chunk()
         if chunk is None:
@@ -448,20 +384,18 @@ if __name__ == "__main__":
     try:
         clf.start()
         print("Đang nghe... Ctrl+C để dừng.")
+        print("AI Classification only - detecting environmental sounds")
         last_print = time.time()
         while True:
-            st, feats = clf.classify_audio()
+            label, conf, rms = clf.classify_audio()
             now = time.time()
             if now - last_print > 0.2:
-                env_label = feats.get("env_label")
-                env_conf = feats.get("env_conf", 0.0)
-                rms = feats.get("rms", 0.0)
-
-                if env_label is not None:
-                    print(f"type={st.value:7s} | rms={rms:.4f} | env={env_label} (conf={env_conf:.2f})")
-
+                if label is not None:
+                    print(f"AI={label:15s} | conf={conf:.2f} | rms={rms:.4f}")
+                else:
+                    print(f"[Silence/Low Energy] rms={rms:.4f}")
                 last_print = now
     except KeyboardInterrupt:
         print("\nStop by user.")
     finally:
-        clf.cleanup()
+        clf.stop()

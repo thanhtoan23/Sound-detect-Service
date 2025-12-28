@@ -15,8 +15,8 @@ from rich import box
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from sound_detector import SoundDetector
-from audio_classifier import AudioClassifier, SoundType
-from sound_service import SoundDetectionService
+from audio_classifier import AudioClassifier
+from smart_audio_pipeline import SmartAudioSystem
 import config
 
 console = Console()
@@ -39,12 +39,11 @@ def print_info(text):
 
 
 def cmd_start(args):
-    print_header("Starting Sound Detection Service")
+    print_header("Starting Smart Audio Monitor")
     
     try:
-        service = SoundDetectionService(
-            enable_audio_classification=not args.no_classifier
-        )
+        system = SmartAudioSystem()
+        detector = SoundDetector()
         
         with Progress(
             SpinnerColumn(),
@@ -52,18 +51,28 @@ def cmd_start(args):
             console=console
         ) as progress:
             task = progress.add_task("[cyan]Initializing...", total=None)
-            service.start()
-            progress.update(task, description="[green]Service started!")
+            if not detector.connect():
+                print_error("Cannot connect to ReSpeaker device")
+                return
+            system.start()
+            progress.update(task, description="[green]System started!")
         
-        print_success("Service is running")
+        print_success("System is running")
         
         if args.monitor:
             console.print("\n[yellow]Monitor Mode[/yellow] (Press Ctrl+C to stop)\n")
-            monitor_service_live(service)
-            service.stop()
-            print_success("Service stopped")
+            monitor_live(system, detector)
+            system.stop()
+            detector.disconnect()
+            print_success("System stopped")
         else:
-            print_info("Service running in background. Use 'monitor' command to view status.")
+            print_info("System running. Use Ctrl+C to stop.")
+            try:
+                while True:
+                    time.sleep(1)
+            except KeyboardInterrupt:
+                system.stop()
+                detector.disconnect()
             
     except KeyboardInterrupt:
         console.print("\n[yellow]Stopping service...[/yellow]")
@@ -83,73 +92,75 @@ def cmd_start(args):
         sys.exit(1)
 
 
-def monitor_service_live(service):
-    """Simple monitor - print each line continuously"""
+def monitor_live(system, detector):
+    """Monitor AI classification in real-time"""
     
     console.print("\n[bold cyan]═══════════════════════════════════════════════════[/bold cyan]")
-    console.print("[bold]VAD | Volume (RMS) | Direction | Sound Type[/bold]")
+    console.print("[bold]RMS In | RMS Out | Gain | Direction | AI Label (Confidence)[/bold]")
     console.print("[bold cyan]═══════════════════════════════════════════════════[/bold cyan]")
+    
+    detections = {}
     
     try:
         while True:
-            status = service.get_current_state()
+            result = system.process_and_predict()
+            direction = detector.get_direction()
             
-            vad = "Yes" if status.get('vad') else "No "
+            if result:
+                rms_in = result['rms_raw']
+                rms_out = result['rms_clean']
+                gain = result['gain_applied']
+                label = result.get('env_label', 'unknown')
+                conf = result.get('env_conf', 0.0) * 100
+                
+                dir_str = f"{direction:>3}°" if direction else " N/A"
+                
+                # Track detections
+                if label and label != 'unknown':
+                    detections[label] = detections.get(label, 0) + 1
+                
+                # Color based on confidence
+                if conf > 70:
+                    color = 'green'
+                elif conf > 50:
+                    color = 'yellow'
+                else:
+                    color = 'dim'
+                
+                console.print(
+                    f"{rms_in:6.3f} | {rms_out:7.3f} | {gain:4.1f}x | {dir_str:9} | "
+                    f"[{color}]{label:12} ({conf:5.1f}%)[/{color}]"
+                )
             
-            rms = status.get('rms', 0)
-            
-            dir_val = status.get('direction')
-            direction = f"{dir_val:>3}°" if dir_val is not None else " N/A"
-            
-            sound_type = status.get('sound_type', 'unknown').upper()
-            
-            color = {
-                'SPEECH': 'green',
-                'MUSIC': 'blue',
-                'NOISE': 'red',
-                'SILENCE': 'dim',
-                'UNKNOWN': 'yellow'
-            }.get(sound_type, 'white')
-            
-            console.print(f"{vad:3} | {rms:13.0f} | {direction:9} | [{color}]{sound_type:12}[/{color}]")
-            
-            time.sleep(config.MONITOR_REFRESH_RATE)
+            time.sleep(0.15)
             
     except KeyboardInterrupt:
         console.print("\n[bold cyan]═══════════════════════════════════════════════════[/bold cyan]")
-        console.print("[bold yellow]STATISTICS[/bold yellow]")
+        console.print("[bold yellow]DETECTION SUMMARY[/bold yellow]")
         console.print("[bold cyan]═══════════════════════════════════════════════════[/bold cyan]\n")
         
-        stats = service.get_statistics()
-        total = stats.get('total_detections', 0)
-        
-        table = Table(show_header=True, header_style="bold magenta", box=box.ROUNDED)
-        table.add_column("Sound Type", style="cyan", width=15)
-        table.add_column("Count", style="green", width=10, justify="right")
-        table.add_column("Percentage", style="yellow", width=12, justify="right")
-        table.add_column("Bar", style="blue", width=30)
-        
-        for sound_type, count in stats.get('by_type', {}).items():
-            percentage = stats.get('percentages', {}).get(sound_type, 0)
-            bar = "█" * int(percentage / 3)
+        if detections:
+            table = Table(show_header=True, header_style="bold magenta", box=box.ROUNDED)
+            table.add_column("AI Label", style="cyan", width=20)
+            table.add_column("Count", style="green", width=10, justify="right")
+            table.add_column("Bar", style="blue", width=30)
             
-            color = {
-                'speech': 'green',
-                'music': 'blue',
-                'noise': 'red',
-                'silence': 'white',
-                'unknown': 'yellow'
-            }.get(sound_type, 'white')
+            total = sum(detections.values())
+            for label, count in sorted(detections.items(), key=lambda x: x[1], reverse=True):
+                percentage = (count / total * 100) if total > 0 else 0
+                bar = "█" * int(percentage / 3)
+                
+                table.add_row(
+                    f"[green]{label.upper()}[/green]",
+                    str(count),
+                    f"[blue]{bar}[/blue] {percentage:.1f}%"
+                )
             
-            table.add_row(
-                f"[{color}]{sound_type.upper()}[/{color}]",
-                str(count),
-                f"{percentage:.1f}%",
-                f"[{color}]{bar}[/{color}]"
-            )
+            console.print(table)
+            console.print(f"\n[bold]Total detections: {total}[/bold]")
+        else:
+            console.print("[dim]No detections recorded[/dim]")
         
-        console.print(table)
-        console.print(f"\n[bold]Total detections: {total}[/bold]")
         console.print("\n[yellow]Monitor stopped[/yellow]")
 
 
@@ -233,54 +244,59 @@ def cmd_test_vad(args):
 
 def cmd_test_audio(args):
     """Test audio classification"""
-    print_header("Testing Audio Classification")
+    print_header("Testing AI Audio Classification")
     
     try:
         classifier = AudioClassifier()
         detector = SoundDetector()
         
         print_info(f"Recording for {args.duration} seconds...")
-        print_info("Try: speaking, playing music, making noise, or staying silent\n")
+        print_info("Make various sounds to test AI classification\n")
         
         detector_available = detector.connect()
         
-        if not classifier.start_stream():
-            print_error("Failed to start audio stream")
+        try:
+            classifier.start()
+        except Exception as e:
+            print_error(f"Failed to start audio stream: {e}")
             return
         
         if detector_available:
-            console.print("[dim]Type       │ RMS    │ ZCR      │ Direction[/dim]")
-            console.print("[dim]───────────┼────────┼──────────┼──────────[/dim]")
+            console.print("[dim]AI Label      │ Confidence │ RMS    │ Direction[/dim]")
+            console.print("[dim]──────────────┼────────────┼────────┼──────────[/dim]")
         else:
-            console.print("[dim]Type       │ RMS    │ ZCR[/dim]")
-            console.print("[dim]───────────┼────────┼──────────[/dim]")
+            console.print("[dim]AI Label      │ Confidence │ RMS[/dim]")
+            console.print("[dim]──────────────┼────────────┼────────[/dim]")
         
-        sound_counts = {}
+        label_counts = {}
         start_time = time.time()
         
         while time.time() - start_time < args.duration:
-            sound_type, features = classifier.classify_audio()
-            sound_counts[sound_type.value] = sound_counts.get(sound_type.value, 0) + 1
+            label, conf, rms = classifier.classify_audio()
+            
+            if label:
+                label_counts[label] = label_counts.get(label, 0) + 1
             
             direction = None
             if detector_available:
                 direction = detector.get_direction()
             
-            color_map = {
-                'silence': 'dim',
-                'speech': 'green',
-                'music': 'blue',
-                'noise': 'red',
-                'unknown': 'yellow'
-            }
-            color = color_map.get(sound_type.value, 'white')
+            # Color based on confidence
+            if conf > 0.7:
+                color = 'green'
+            elif conf > 0.5:
+                color = 'yellow'
+            else:
+                color = 'dim'
+            
+            label_str = label if label else 'unknown'
             
             if detector_available and direction is not None:
-                console.print(f"[{color}]{sound_type.value.upper():10}[/{color}] │ {features.get('rms', 0):6.0f} │ {features.get('zcr', 0):.6f} │ [green]{direction:>3}°[/green]")
+                console.print(f"[{color}]{label_str:14}[/{color}] │ {conf*100:9.1f}% │ {rms:6.3f} │ [{color}]{direction:>3}°[/{color}]")
             else:
-                console.print(f"[{color}]{sound_type.value.upper():10}[/{color}] │ {features.get('rms', 0):6.0f} │ {features.get('zcr', 0):.6f}")
+                console.print(f"[{color}]{label_str:14}[/{color}] │ {conf*100:9.1f}% │ {rms:6.3f}")
             
-            time.sleep(0.5)
+            time.sleep(0.3)
         
         if detector_available:
             detector.disconnect()
@@ -290,28 +306,21 @@ def cmd_test_audio(args):
         console.print("═" * 60 + "\n")
         
         table = Table(show_header=True, header_style="bold magenta", box=box.ROUNDED)
-        table.add_column("Type", style="cyan", width=12)
+        table.add_column("AI Label", style="cyan", width=15)
         table.add_column("Count", style="green", width=10)
         table.add_column("Percentage", style="yellow", width=15)
         table.add_column("Bar", style="blue", width=30)
         
-        total = sum(sound_counts.values())
-        for sound_type, count in sorted(sound_counts.items(), key=lambda x: x[1], reverse=True):
+        total = sum(label_counts.values())
+        for label, count in sorted(label_counts.items(), key=lambda x: x[1], reverse=True):
             percentage = (count / total * 100) if total > 0 else 0
             bar = "█" * int(percentage / 3.33)
             
-            color = {
-                'speech': 'green',
-                'music': 'blue',
-                'noise': 'red',
-                'silence': 'white'
-            }.get(sound_type, 'white')
-            
             table.add_row(
-                f"[{color}]{sound_type.upper()}[/{color}]",
+                f"[green]{label.upper()}[/green]",
                 str(count),
                 f"{percentage:.1f}%",
-                f"[{color}]{bar}[/{color}]"
+                f"[blue]{bar}[/blue]"
             )
         
         console.print(table)
@@ -322,57 +331,32 @@ def cmd_test_audio(args):
         sys.exit(1)
 
 
-def cmd_record(args):
-    """Record audio to file"""
-    print_header(f"Recording to {args.output}")
-    
-    try:
-        classifier = AudioClassifier()
-        
-        with Progress(console=console) as progress:
-            task = progress.add_task("[cyan]Recording...", total=args.duration)
-            classifier.record_to_file(args.output, args.duration)
-            progress.update(task, completed=args.duration)
-        
-        print_success(f"Recorded {args.duration}s to {args.output}")
-        
-    except Exception as e:
-        print_error(f"Recording failed: {e}")
-        sys.exit(1)
-
-
 def main():
     """Main CLI entry point"""
     parser = argparse.ArgumentParser(
-        description="ReSpeaker Sound Detection Service - Modern CLI",
+        description="ReSpeaker Smart Audio Monitor - AI Classification CLI",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  %(prog)s start --monitor          Start and monitor service
-  %(prog)s status                   Check device status  
-  %(prog)s test-vad --duration 10   Test VAD for 10 seconds
-  %(prog)s test-audio               Test audio classification
-  %(prog)s record output.wav        Record audio to file
+  %(prog)s start --monitor          Start and monitor AI classification
+  %(prog)s status                   Check ReSpeaker device status  
+  %(prog)s test-vad --duration 10   Test VAD/DOA for 10 seconds
+  %(prog)s test-audio               Test AI audio classification
         """
     )
     
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
     
-    start_parser = subparsers.add_parser('start', help='Start the service')
+    start_parser = subparsers.add_parser('start', help='Start the system')
     start_parser.add_argument('--monitor', action='store_true', help='Monitor mode')
-    start_parser.add_argument('--no-classifier', action='store_true', help='Disable audio classification')
     
     subparsers.add_parser('status', help='Show device status')
     
     test_vad_parser = subparsers.add_parser('test-vad', help='Test VAD & DOA')
     test_vad_parser.add_argument('--duration', type=int, default=10, help='Duration in seconds')
     
-    test_audio_parser = subparsers.add_parser('test-audio', help='Test audio classification')
+    test_audio_parser = subparsers.add_parser('test-audio', help='Test AI audio classification')
     test_audio_parser.add_argument('--duration', type=int, default=10, help='Duration in seconds')
-    
-    record_parser = subparsers.add_parser('record', help='Record audio to file')
-    record_parser.add_argument('output', help='Output WAV file')
-    record_parser.add_argument('--duration', type=int, default=5, help='Duration in seconds')
     
     args = parser.parse_args()
     
@@ -384,8 +368,7 @@ Examples:
         'start': cmd_start,
         'status': cmd_status,
         'test-vad': cmd_test_vad,
-        'test-audio': cmd_test_audio,
-        'record': cmd_record
+        'test-audio': cmd_test_audio
     }
     
     try:
