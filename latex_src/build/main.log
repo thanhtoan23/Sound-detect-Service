@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.5.7)  29 DEC 2025 09:41
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.5.7)  29 DEC 2025 11:18
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1214,98 +1214,58 @@ File: graphics/hcmut.png Graphic file (type png)
 Package pdftex.def Info: graphics/hcmut.png  used on input line 97.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [15]
-Overfull \hbox (9.91519pt too wide) in paragraph at lines 106--107
-[]\T5/ptm/b/n/12 Feature Extraction\T5/ptm/m/n/12 : chuyºn t½n hi»u audio ^^_¢ qua DSP sang biºu di¹n \T5/ptm/m/it/12 Log-Mel Spectrogram\T5/ptm/m/n/12 . 
- []
-
-
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 119.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 121.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [16]
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 164.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 166.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [17]
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 181.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 183.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [18]
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 215.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 217.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 215.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 217.
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <6> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 215.
-
-Underfull \hbox (badness 4341) in paragraph at lines 220--220
-[]\T5/ptm/m/n/10.95 AI classifier: Feature extraction, CNN inference,
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 222--222
-[]\T5/ptm/m/n/10.95 Tkinter GUI vîi threading model, queue-based
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 224--224
-[]\T5/ptm/m/n/10.95 Configuration constants: thresholds, paths,
- []
-
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 217.
 
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 229.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 241.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [19]
 LaTeX Font Info:    Font shape `T5/cmtt/bx/n' in size <14.4> not available
-(Font)              Font shape `T5/cmtt/m/n' tried instead on input line 285.
+(Font)              Font shape `T5/cmtt/m/n' tried instead on input line 297.
 
-Overfull \hbox (1.76202pt too wide) in paragraph at lines 287--288
-[]\T5/ptm/m/n/12 File \T5/cmtt/m/n/12 smart_audio_pipeline.py \T5/ptm/m/n/12 ^^_ành ngh¾a lîp \T5/cmtt/m/n/12 SmartAudioSystem \T5/ptm/m/n/12 nh÷ mët lîp \T5/ptm/m/it/12 orchestrator\T5/ptm/m/n/12 ,
- []
-
-
-Overfull \hbox (25.8973pt too wide) in paragraph at lines 343--343
+Overfull \hbox (25.8973pt too wide) in paragraph at lines 361--361
  []\T5/ptm/m/n/10.95 (\T5/cmtt/m/n/10.95 classifier.classify_chunk()\T5/ptm/m/n/10.95 ) 
  []
 
 
-Overfull \hbox (3.20972pt too wide) in paragraph at lines 353--354
-[]\T5/ptm/b/n/12 DSP\T5/ptm/m/n/12 : xû lþ \T5/cmtt/m/n/12 raw_chunk \T5/ptm/m/n/12 ^^_º t¤o \T5/cmtt/m/n/12 clean_chunk \T5/ptm/m/n/12 v  cªp nhªt mët sè ch¿ sè gi¡m s¡t (RMS/gain). 
- []
-
-
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 361.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 377.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [20]
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 378.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 396.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [21]
-Underfull \hbox (badness 10000) in paragraph at lines 388--388
-[]\T5/ptm/m/n/12 Nh¢n dü ^^_o¡n; câ thº
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 388--388
-\T5/cmtt/m/n/12 None\T5/ptm/m/n/12 /\T5/cmtt/m/n/12 unknown \T5/ptm/m/n/12 tòy logic
- []
-
-
-Overfull \hbox (50.18228pt too wide) in paragraph at lines 437--438
+Overfull \hbox (50.18228pt too wide) in paragraph at lines 463--464
  [][] 
  []
 
@@ -1313,7 +1273,7 @@ Overfull \hbox (50.18228pt too wide) in paragraph at lines 437--438
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 441.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 467.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [22]) (./contents/sect3a.tex
 
@@ -1394,32 +1354,22 @@ File: graphics/hcmut.png Graphic file (type png)
 Package pdftex.def Info: graphics/hcmut.png  used on input line 101.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [31]
-Overfull \hbox (28.33916pt too wide) in paragraph at lines 123--124
-[]\T5/ptm/m/n/12 Sau còng: \T5/ptm/m/it/12 Conv2D(256) $\OMS/ztmcm/m/n/12 !$ \T5/ptm/m/it/12 BatchNorm $\OMS/ztmcm/m/n/12 !$ \T5/ptm/m/it/12 ReLU $\OMS/ztmcm/m/n/12 !$ \T5/ptm/m/it/12 GlobalAveragePooling $\OMS/ztmcm/m/n/12 !$ \T5/ptm/m/it/12 Dropout(0.5)
- []
-
-
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 136.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 138.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [32]
-Overfull \hbox (72.79985pt too wide) in paragraph at lines 175--176
-[]\T5/ptm/m/n/12 Sau khi câ nh¢n dü ^^_o¡n v  x¡c su§t t÷ìng ùng, n¸u ^^_iºm dü ^^_o¡n \T5/ptm/b/n/12 b² hìn \T5/ptm/m/it/12 ENV_CONF_THRESHOLD
- []
-
-
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 176.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 179.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [33]
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 214.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 218.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [34]) (./contents/sect3d.tex
 <graphics/img/test_processor_before.png, id=620, 797.8608pt x 426.393pt>
@@ -1444,26 +1394,21 @@ File: graphics/hcmut.png Graphic file (type png)
 Package pdftex.def Info: graphics/hcmut.png  used on input line 30.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [35 <./graphics/img/test_processor_before.png> <./graphics/img/test_processor_after.png>]
-Overfull \hbox (7.33473pt too wide) in paragraph at lines 57--60
-[]\T5/ptm/m/n/12 Confidence cõa h» thèng l  x¡c su§t lîn nh§t sau smoothing, v  câ ng÷ïng \T5/cmtt/m/n/12 ENV_CONF_THRESHOLD
- []
-
-
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 60.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 59.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [36]
 <graphics/fig/ui_runtime_dog.png, id=646, 1414.53468pt x 721.19438pt>
 File: graphics/fig/ui_runtime_dog.png Graphic file (type png)
 <use graphics/fig/ui_runtime_dog.png>
-Package pdftex.def Info: graphics/fig/ui_runtime_dog.png  used on input line 66.
+Package pdftex.def Info: graphics/fig/ui_runtime_dog.png  used on input line 68.
 (pdftex.def)             Requested size: 446.13727pt x 227.45255pt.
 <graphics/fig/ui_runtime_switch_laughing_dog.png, id=647, 1086.30844pt x 179.92218pt>
 File: graphics/fig/ui_runtime_switch_laughing_dog.png Graphic file (type png)
 <use graphics/fig/ui_runtime_switch_laughing_dog.png>
-Package pdftex.def Info: graphics/fig/ui_runtime_switch_laughing_dog.png  used on input line 73.
+Package pdftex.def Info: graphics/fig/ui_runtime_switch_laughing_dog.png  used on input line 75.
 (pdftex.def)             Requested size: 446.13727pt x 73.8921pt.
 ) (./contents/sect4.tex
 
@@ -1494,13 +1439,13 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 Here is how much of TeX's memory you used:
  43645 strings out of 469608
  975082 string characters out of 5474780
- 1755452 words of memory out of 5000000
+ 1710452 words of memory out of 5000000
  69530 multiletter control sequences out of 15000+600000
  707866 words of font info for 162 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 140i,25n,135p,820b,1327s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 140i,25n,135p,820b,2188s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/rsfs/rsfs10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/urw/symbol/usyr.pfb><c:/texlive/2025/texmf-dist/fonts/type1/urw/symbol/usyr.pfb><c:/texlive/2025/texmf-dist/fonts/type1/urw/times/utmb8a.pfb><c:/texlive/2025/texmf-dist/fonts/type1/vntex/urwvn/utmb8v.pfb><c:/texlive/2025/texmf-dist/fonts/type1/vntex/urwvn/utmbi8v.pfb><c:/texlive/2025/texmf-dist/fonts/type1/urw/times/utmr8a.pfb><c:/texlive/2025/texmf-dist/fonts/type1/vntex/urwvn/utmr8v.pfb><c:/texlive/2025/texmf-dist/fonts/type1/urw/times/utmri8a.pfb><c:/texlive/2025/texmf-dist/fonts/type1/vntex/urwvn/utmri8v.pfb><c:/texlive/2025/texmf-dist/fonts/type1/vntex/vnr/vntt10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/vntex/vnr/vntt12.pfb>
-Output written on build/main.pdf (39 pages, 1241711 bytes).
+Output written on build/main.pdf (39 pages, 1241676 bytes).
 PDF statistics:
  785 PDF objects out of 1000 (max. 8388607)
  683 compressed objects within 7 object streams

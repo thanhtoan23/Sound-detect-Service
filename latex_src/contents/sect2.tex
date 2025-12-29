@@ -66,7 +66,7 @@ direction = int.from_bytes(response, byteorder='little')
 \texttt{AudioProcessor} thực hiện tiền xử lý tín hiệu nhằm cải thiện chất lượng đầu vào cho mô hình AI. Trong thực tế, tín hiệu thu được từ microphone có thể bị nhiễu nền, biến thiên biên độ hoặc chứa thành phần tần số không hữu ích. Do đó, DSP được áp dụng để: (i) loại bỏ phần nhiễu ngoài dải quan tâm, (ii) giảm nhiễu nền và (iii) ổn định mức âm lượng để mô hình AI hoạt động nhất quán hơn.
 Pipeline DSP trong hệ thống gồm ba bước chính:
 \begin{enumerate}
-    \item \textbf{Bandpass Filter}: giới hạn dải tần hữu ích (ví dụ 100--7500\,Hz) để giảm rumble tần thấp và hiss tần cao.
+    \item \textbf{Bandpass Filter}: giới hạn dải tần hữu ích (100--7500\,Hz) để giảm rumble tần thấp và hiss tần cao.
     \item \textbf{Spectral Gating}: giảm nhiễu nền trong miền tần số, giúp tăng tỉ lệ tín hiệu/nhiễu trong bối cảnh môi trường có noise.
     \item \textbf{AGC (Automatic Gain Control)}: ổn định biên độ (RMS) theo mục tiêu, đồng thời có ngưỡng gate để tránh khuếch đại nhiễu khi gần im lặng.
 \end{enumerate}
@@ -103,7 +103,9 @@ Hình~\ref{fig:dsp_pipeline} minh họa thứ tự xử lý của pipeline DSP.
 
 Các nhiệm vụ chính của module gồm:
 \begin{itemize}
-    \item \textbf{Feature Extraction}: chuyển tín hiệu audio đã qua DSP sang biểu diễn \textit{Log-Mel Spectrogram}.
+    \item \textbf{Feature Extraction}: chuyển tín hiệu audio đã qua DSP sang biểu diễn
+    
+    \textit{Log-Mel Spectrogram}.
     \item \textbf{Buffering/Windowing}: tích lũy dữ liệu theo cửa sổ ngắn (ví dụ vài giây) để tạo input đủ ``già'' cho mô hình.
     \item \textbf{Inference}: chạy mô hình CNN để dự đoán phân phối xác suất theo lớp, sau đó lấy nhãn top-1 và độ tin cậy.
     \item \textbf{Temporal Post-processing}: làm mượt dự đoán theo thời gian và xử lý trường hợp im lặng nhằm giảm jitter của nhãn.
@@ -215,13 +217,23 @@ Bảng~\ref{tab:code_structure} mô tả chi tiết chức năng của từng fi
 \begin{tabular}{|l|p{8.5cm}|}
 \hline
 \textbf{File} & \textbf{Chức năng} \\ \hline
-\texttt{sound\_detector.py}  & Giao tiếp USB với ReSpeaker, đọc VAD/DOA, quản lý kết nối hardware \\ \hline
+\texttt{sound\_detector.py}  & Giao tiếp USB với ReSpeaker, đọc VAD/DOA, 
+
+quản lý kết nối hardware \\ \hline
 \texttt{audio\_processor.py} & DSP pipeline: Bandpass Filter, Spectral Gating, AGC với stateful processing \\ \hline
-\texttt{audio\_classifier.py}  & AI classifier: Feature extraction, CNN inference, temporal smoothing, buffering \\ \hline
+\texttt{audio\_classifier.py}  & AI classifier: Feature extraction,
+
+CNN inference, temporal smoothing, buffering \\ \hline
 \texttt{smart\_audio\_pipeline.py}  & Integration orchestrator: kết nối DSP + AI, chuẩn hóa output, lifecycle management \\ \hline
-\texttt{gui\_app.py} & Tkinter GUI với threading model, queue-based communication, real-time visualization \\ \hline
-\texttt{cli.py} & Rich CLI với commands (start, status, test), terminal-based monitoring \\ \hline
-\texttt{config.py}  & Configuration constants: thresholds, paths, hyperparameters \\ \hline
+\texttt{gui\_app.py} & Tkinter GUI với threading model, 
+
+queue-based communication, real-time visualization \\ \hline
+\texttt{cli.py} & Rich CLI với commands (start, status, test), 
+
+terminal-based monitoring \\ \hline
+\texttt{config.py}  & Configuration constants: thresholds, paths, 
+
+hyperparameters \\ \hline
 \end{tabular}
 \caption{Chi tiết các module chính trong hệ thống}
 \label{tab:code_structure}
@@ -284,7 +296,13 @@ Bảng~\ref{tab:code_structure} mô tả chi tiết chức năng của từng fi
 %--------------------------------------------------------
 \subsection{Pipeline tích hợp trong \texttt{smart\_audio\_pipeline.py}}
 
-File \texttt{smart\_audio\_pipeline.py} định nghĩa lớp \texttt{SmartAudioSystem} như một lớp \textit{orchestrator}, có nhiệm vụ ghép chuỗi xử lý thời gian thực thành một API thống nhất. Mỗi lần gọi, hệ thống đọc một chunk âm thanh, chạy DSP, suy luận AI và trả về một \textit{state} chuẩn hóa. Nhờ đó, GUI/CLI chỉ làm nhiệm vụ hiển thị và điều khiển, không cần phụ thuộc vào chi tiết nội bộ của DSP/AI.
+File \texttt{smart\_audio\_pipeline.py} định nghĩa lớp \texttt{SmartAudioSystem} như một lớp 
+
+\textit{orchestrator}, có nhiệm vụ ghép chuỗi xử lý thời gian thực thành một API thống nhất.
+
+Mỗi lần gọi, hệ thống đọc một chunk âm thanh, chạy DSP, suy luận AI và trả về một \textit{state} chuẩn hóa. 
+
+Nhờ đó, GUI/CLI chỉ làm nhiệm vụ hiển thị và điều khiển, không cần phụ thuộc vào chi tiết nội bộ của DSP/AI.
 
 \subsubsection{Luồng xử lý trong \texttt{process\_and\_predict()}}
 Hình~\ref{fig:pipeline_flow} minh họa luồng xử lý chính của hàm \texttt{process\_and\_predict()}.
@@ -350,8 +368,12 @@ Hình~\ref{fig:pipeline_flow} minh họa luồng xử lý chính của hàm \tex
 \noindent Luồng xử lý có thể tóm tắt như sau:
 \begin{enumerate}
     \item \textbf{Đọc chunk}: lấy \texttt{raw\_chunk} từ audio stream. Nếu không có dữ liệu hợp lệ, trả về \texttt{None}.
-    \item \textbf{DSP}: xử lý \texttt{raw\_chunk} để tạo \texttt{clean\_chunk} và cập nhật một số chỉ số giám sát (RMS/gain).
-    \item \textbf{AI}: suy luận trên \texttt{clean\_chunk} và tạo kết quả \texttt{label/confidence} (có thể chạy theo cơ chế hop/window).
+    \item \textbf{DSP}: xử lý \texttt{raw\_chunk} để tạo \texttt{clean\_chunk} và 
+    
+    cập nhật một số chỉ số giám sát (RMS/gain).
+    \item \textbf{AI}: suy luận trên \texttt{clean\_chunk} và tạo kết quả \texttt{label/confidence}
+    
+    (có thể chạy theo cơ chế hop/window).
     \item \textbf{Đóng gói}: chuẩn hóa đầu ra thành state cho GUI/CLI.
 \end{enumerate}
 
@@ -385,7 +407,11 @@ def process_and_predict(self):
 \begin{tabular}{|l|l|p{5.4cm}|}
 \hline
 \textbf{Field} & \textbf{Type} & \textbf{Mô tả} \\ \hline
-\texttt{env\_label} & str/None & Nhãn dự đoán; có thể \texttt{None}/\texttt{unknown} tùy logic realtime \\ \hline
+\texttt{env\_label} & str/None & Nhãn dự đoán; có thể 
+
+\texttt{None}/\texttt{unknown} 
+
+tùy logic realtime \\ \hline
 \texttt{env\_conf} & float & Độ tin cậy (0--1) \\ \hline
 \texttt{rms\_raw} & float & RMS của audio đầu vào \\ \hline
 \texttt{rms\_clean} & float & RMS sau tiền xử lý DSP \\ \hline

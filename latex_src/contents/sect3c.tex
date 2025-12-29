@@ -120,7 +120,9 @@ Mô hình phân loại được huấn luyện trên tensor log-mel $(128,64,1)$
     \begin{itemize}
         \item 3 block tích chập với số kênh \textit{[32, 64, 128]}.
         \item Mỗi block gồm 2 lớp \textit{Conv2D(3x3)} + \textit{BatchNorm} + \textit{ReLU}, sau đó \textit{MaxPool(2x2)} và \textit{Dropout(0.25)}.
-        \item Sau cùng: \textit{Conv2D(256)} $\rightarrow$ \textit{BatchNorm} $\rightarrow$ \textit{ReLU} $\rightarrow$ \textit{GlobalAveragePooling} $\rightarrow$ \textit{Dropout(0.5)} $\rightarrow$ \textit{Dense(num\_classes, softmax)}.
+        \item Sau cùng: \textit{Conv2D(256)} $\rightarrow$ \textit{BatchNorm} $\rightarrow$ \textit{ReLU} $\rightarrow$ \textit{GlobalAveragePooling}
+        
+        $\rightarrow$ \textit{Dropout(0.5)} $\rightarrow$ \textit{Dense(num\_classes, softmax)}.
     \end{itemize}
 
     \item \textbf{Xử lý mất cân bằng lớp (Class weight):}
@@ -172,7 +174,9 @@ Trong triển khai realtime, hệ thống đọc dữ liệu từ microphone the
 
     \item \textbf{Áp ngưỡng confidence cho \textit{unknown}:}
     \begin{itemize}
-        \item Sau khi có nhãn dự đoán và xác suất tương ứng, nếu điểm dự đoán \textbf{bé hơn} \textit{ENV\_CONF\_THRESHOLD} thì output bị ép thành \textit{unknown}.
+        \item Sau khi có nhãn dự đoán và xác suất tương ứng, nếu điểm dự đoán \textbf{bé hơn} 
+        
+        \textit{ENV\_CONF\_THRESHOLD} thì output bị ép thành \textit{unknown}.
         \item Cách này giúp hệ thống ``thừa nhận không chắc chắn'' thay vì trả về nhãn sai một cách tự tin.
     \end{itemize}
 \end{itemize}

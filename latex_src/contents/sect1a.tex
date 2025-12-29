@@ -48,7 +48,7 @@ Trong đó $\omega_0 = 2\pi f_0$ là tần số góc trung tâm.
 
 \subsubsection{Hiện thực hóa trong miền số (Digital Implementation)}
 
-Trong các hệ thống nhúng và phần mềm, bộ lọc Butterworth được hiện thực hóa dưới dạng bộ lọc số **IIR (Infinite Impulse Response)**. Quá trình thiết kế thường sử dụng phương pháp **Biến đổi song tuyến (Bilinear Transform)** để chuyển đổi từ miền liên tục $s$ sang miền rời rạc $z$:
+Trong các hệ thống nhúng và phần mềm, bộ lọc Butterworth được hiện thực hóa dưới dạng bộ lọc số \textit{IIR (Infinite Impulse Response)}. Quá trình thiết kế thường sử dụng phương pháp \textit{Biến đổi song tuyến (Bilinear Transform)} để chuyển đổi từ miền liên tục $s$ sang miền rời rạc $z$:
 \begin{equation}
     s = \frac{2}{T} \frac{1 - z^{-1}}{1 + z^{-1}}
 \end{equation}

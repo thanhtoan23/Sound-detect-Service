@@ -54,7 +54,9 @@ Quan sát thực nghiệm cho thấy:
 
 \subsubsection{Confidence}
 
-Confidence của hệ thống là xác suất lớn nhất sau smoothing, và có ngưỡng \texttt{ENV\_CONF\_THRESHOLD} = 0.5:
+Confidence của hệ thống là xác suất lớn nhất sau smoothing,
+
+và có ngưỡng \texttt{ENV\_CONF\_THRESHOLD} = 0.5:
 nếu \texttt{conf} < 0.5 thì ép nhãn về \texttt{unknown}. 
 \begin{itemize}
     \item Trường hợp \texttt{DOG} cho confidence 91.8\% (rất cao), vượt xa ngưỡng nên dự đoán nằm trong vùng “chắc chắn”.
