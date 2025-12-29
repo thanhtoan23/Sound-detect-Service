@@ -1,1 +1,67 @@
 \babel@toc {vietnamese}{}\relax 
+\contentsline {section}{\numberline {1}Giới thiệu}{4}{section.1}%
+\contentsline {section}{\numberline {2}Cơ sở lý thuyết}{4}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Kỹ thuật xử lý tín hiệu số}{4}{subsection.2.1}%
+\contentsline {subsubsection}{\numberline {2.1.1}Lý thuyết Bộ lọc Thông dải (Bandpass Filter)}{4}{subsubsection.2.1.1}%
+\contentsline {subsubsection}{\numberline {2.1.2}Xấp xỉ Butterworth}{5}{subsubsection.2.1.2}%
+\contentsline {subsubsection}{\numberline {2.1.3}Hiện thực hóa trong miền số (Digital Implementation)}{6}{subsubsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.2}Huấn luyện mô hình nhận diện âm thanh}{6}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Biểu diễn đặc trưng Log-Mel Spectrogram}{6}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Chuẩn hóa dữ liệu (Data Normalization)}{7}{subsubsection.2.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.3}Data Augmentation để tăng khả năng tổng quát hóa}{8}{subsubsection.2.2.3}%
+\contentsline {subsubsection}{\numberline {2.2.4}Kiến trúc CNN cho phân loại âm thanh}{10}{subsubsection.2.2.4}%
+\contentsline {subsubsection}{\numberline {2.2.5}Hàm mất mát Cross-Entropy và Label Smoothing}{10}{subsubsection.2.2.5}%
+\contentsline {subsubsection}{\numberline {2.2.6}Tối ưu hóa và chiến lược học}{11}{subsubsection.2.2.6}%
+\contentsline {subsubsection}{\numberline {2.2.7}Mất cân bằng lớp và Class Weight}{11}{subsubsection.2.2.7}%
+\contentsline {subsubsection}{\numberline {2.2.8}Chiến lược huấn luyện và đánh giá}{12}{subsubsection.2.2.8}%
+\contentsline {subsubsection}{\numberline {2.2.9}Ngưỡng tin cậy cho lớp Unknown}{13}{subsubsection.2.2.9}%
+\contentsline {section}{\numberline {3}System Architecture}{14}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Tổng quan kiến trúc hệ thống}{14}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Module phần cứng: SoundDetector (USB VAD/DOA)}{14}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Mô tả chức năng}{14}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Giao tiếp USB}{15}{subsubsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.3}Module DSP Processor: AudioProcessor}{15}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}Mô tả chức năng}{15}{subsubsection.3.3.1}%
+\contentsline {subsubsection}{\numberline {3.3.2}Pipeline xử lý}{16}{subsubsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.4}Module AI Classifier: AudioClassifier}{16}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}Mô tả chức năng}{16}{subsubsection.3.4.1}%
+\contentsline {subsubsection}{\numberline {3.4.2}Post-processing và ổn định theo thời gian}{16}{subsubsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.5}Module Integration Pipeline: SmartAudioSystem}{17}{subsection.3.5}%
+\contentsline {subsubsection}{\numberline {3.5.1}Mô tả chức năng}{17}{subsubsection.3.5.1}%
+\contentsline {subsubsection}{\numberline {3.5.2}Quản lý luồng xử lý}{17}{subsubsection.3.5.2}%
+\contentsline {subsection}{\numberline {3.6}Module User Interface}{17}{subsection.3.6}%
+\contentsline {subsubsection}{\numberline {3.6.1}GUI}{17}{subsubsection.3.6.1}%
+\contentsline {subsubsection}{\numberline {3.6.2}CLI}{18}{subsubsection.3.6.2}%
+\contentsline {section}{\numberline {4}Implementation}{19}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Cấu trúc mã nguồn}{19}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}Tổng quan tổ chức code}{19}{subsubsection.4.1.1}%
+\contentsline {subsubsection}{\numberline {4.1.2}Chi tiết các module chính}{19}{subsubsection.4.1.2}%
+\contentsline {subsection}{\numberline {4.2}Pipeline tích hợp trong \texttt {smart\_audio\_pipeline.py}}{20}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}Luồng xử lý trong \texttt {process\_and\_predict()}}{20}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2}Pseudo-code triển khai}{21}{subsubsection.4.2.2}%
+\contentsline {subsubsection}{\numberline {4.2.3}Định dạng \textit {state} trả về}{22}{subsubsection.4.2.3}%
+\contentsline {subsubsection}{\numberline {4.2.4}Cơ chế realtime trong GUI (thread + queue)}{22}{subsubsection.4.2.4}%
+\contentsline {subsubsection}{\numberline {4.2.5}Dừng/chạy lại an toàn}{23}{subsubsection.4.2.5}%
+\contentsline {subsection}{\numberline {4.3}Hiện thực bộ xử lý âm thanh}{23}{subsection.4.3}%
+\contentsline {subsubsection}{\numberline {4.3.1}Phương thức khởi tạo:\texttt {\_\_init\_\_}}{24}{subsubsection.4.3.1}%
+\contentsline {subsubsection}{\numberline {4.3.2}Phương thức \texttt {apply\_bandpass(chunk)}}{24}{subsubsection.4.3.2}%
+\contentsline {subsubsection}{\numberline {4.3.3}Phương thức \texttt {apply\_spectral\_gate(chunk)}}{26}{subsubsection.4.3.3}%
+\contentsline {subsubsection}{\numberline {4.3.4}Phương thức \texttt {apply\_agc(chunk)}}{27}{subsubsection.4.3.4}%
+\contentsline {subsubsection}{\numberline {4.3.5}Phương thức \texttt {process(chunk)}}{28}{subsubsection.4.3.5}%
+\contentsline {subsubsection}{\numberline {4.3.6}Phương thức \texttt {reset\_states()}}{29}{subsubsection.4.3.6}%
+\contentsline {subsection}{\numberline {4.4}Hiện thực mô hình học máy}{29}{subsection.4.4}%
+\contentsline {subsubsection}{\numberline {4.4.1}Tiền xử lý dữ liệu}{29}{subsubsection.4.4.1}%
+\contentsline {subsubsection}{\numberline {4.4.2}Huấn luyện mô hình}{31}{subsubsection.4.4.2}%
+\contentsline {subsubsection}{\numberline {4.4.3}Suy luận thời gian thực}{33}{subsubsection.4.4.3}%
+\contentsline {subsubsection}{\numberline {4.4.4}Hậu xử lý theo thời gian:}{34}{subsubsection.4.4.4}%
+\contentsline {section}{\numberline {5}Kết quả kiểm thử \& Đánh giá}{35}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Kiểm thử bộ xử lý âm thanh}{35}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Kiểm thử mô hình học máy}{36}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Stability}{36}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}Confidence}{37}{subsubsection.5.2.2}%
+\contentsline {section}{\numberline {6}Kết luận}{38}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Tóm tắt kết quả đạt được}{38}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Đánh giá hiệu suất và ưu điểm}{38}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Những hạn chế}{38}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Hướng phát triển tương lai}{39}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}Kết luận cuối cùng}{39}{subsection.6.5}%

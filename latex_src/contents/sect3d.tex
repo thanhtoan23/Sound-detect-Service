@@ -1,0 +1,76 @@
+\section{Kết quả kiểm thử \& Đánh giá}
+\subsection{Kiểm thử bộ xử lý âm thanh}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \framebox{\parbox{\textwidth}{\centering
+\includegraphics[width=\textwidth]{graphics/img/test_processor_before.png}
+        }}
+        \caption{Tín hiệu thô}
+        \label{fig:before}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \framebox{\parbox{0.95\textwidth}{\centering
+\includegraphics[width=0.95\textwidth]{graphics/img/test_processor_after.png}
+        }}
+        \caption{Sau khi xử lý}
+        \label{fig:after}
+    \end{subfigure}
+    \caption{So sánh dạng sóng tín hiệu trước và sau khi đi qua luồng xử lý của AudioProcessor.}
+    \label{fig:comparison}
+\end{figure}
+
+Dựa trên kết quả quan sát từ Hình \ref{fig:comparison}, ta có thể đưa ra các đánh giá chi tiết về hiệu quả của bộ xử lý \texttt{AudioProcessor} như sau:
+
+\begin{itemize}
+    \item \textbf{Loại bỏ nhiễu nền:} Ở Hình \ref{fig:before}, các vùng không có những âm thanh mục tiêu (khoảng thời gian 0s - 0.8s và sau 4.2s) xuất hiện nhiều dải màu tím và hồng nhạt trên khắp các dải tần, cho thấy sự hiện diện của white noise và nhiễu môi trường. Sau khi qua bộ lọc (Hình \ref{fig:after}), các vùng này gần như chuyển sang màu đen hoàn toàn, chứng tỏ mức nhiễu đã được triệt tiêu đáng kể.
+    
+    \item \textbf{Lọc dải tần:} Các thành phần nhiễu ở dải tần cực thấp (dưới 64Hz) và dải tần cao (trên 8192Hz) đã được suy giảm mạnh. Điều này cho thấy các bộ lọc thông dải Butterworth đã hoạt động hiệu quả trong việc tập trung vào dải tần số của các âm thanh dùng để phân loại trong đồ án này.
+    
+    \item \textbf{Bảo toàn đặc trưng tín hiệu :} Mặc dù nhiễu nền bị loại bỏ, các cấu trúc của âm thanh mục tiêu (các vạch màu vàng, cam sáng trong khoảng tần số 128Hz - 4096Hz) vẫn giữ được độ sắc nét và cường độ cần thiết.
+    
+\end{itemize}
+
+Kết quả kiểm nghiệm cho thấy bộ xử lý âm thanh đã hoàn thành tốt vai trò tiền xử lý, tạo ra một tín hiệu sạch hơn nhưng vẫn đảm bảo không làm biến dạng các đặc trưng âm học quan trọng của nguồn âm chính.
+
+\subsection{Kiểm thử mô hình học máy}
+
+Âm thanh được đọc với $f_s=16$ kHz và \texttt{chunk}=1024 mẫu; buffer giữ tối đa 5 giây, và mô hình phân loại trên đoạn 2 giây gần nhất trong buffer. 
+Dự đoán chỉ được cập nhật mỗi 0.5s giữa các lần cập nhật, hệ thống giữ kết quả gần nhất để UI không bị thay đổi liên tục.
+\subsubsection{Stability}
+
+Độ ổn định được đánh giá theo mức độ nhảy nhãn theo thời gian (label switches), trong đó hệ thống đã triển khai:
+(i) smoothing bằng trung bình xác suất trên cửa sổ \texttt{ENV\_SMOOTH\_K=3} và
+(ii) fast-switch để giảm trễ khi môi trường thật sự đổi lớp.
+Quan sát thực nghiệm cho thấy:
+\begin{itemize}
+    \item Ở trường hợp âm thanh ổn định (Hình~\ref{fig:ui_runtime_dog}), hệ thống giữ nhãn \texttt{DOG} với confidence cao (91.8\%), và log hiển thị lặp lại cùng nhãn — cho thấy đầu ra ổn định trong đoạn quan sát.
+    \item Ở tình huống môi trường thay đổi (Hình~\ref{fig:ui_runtime_switch}), log ghi nhận chuyển nhãn từ \texttt{LAUGHING} (65\%) tại 01:44:12 sang \texttt{DOG} (61\%) tại 01:44:13, tức có xảy ra label switch tương ứng với thay đổi sự kiện âm thanh.
+\end{itemize}
+
+\subsubsection{Confidence}
+
+Confidence của hệ thống là xác suất lớn nhất sau smoothing, và có ngưỡng \texttt{ENV\_CONF\_THRESHOLD} = 0.5:
+nếu \texttt{conf} < 0.5 thì ép nhãn về \texttt{unknown}. 
+\begin{itemize}
+    \item Trường hợp \texttt{DOG} cho confidence 91.8\% (rất cao), vượt xa ngưỡng nên dự đoán nằm trong vùng “chắc chắn”.
+    \item Trường hợp chuyển \texttt{LAUGHING} $\rightarrow$ \texttt{DOG} có confidence 61--65\% (trung bình nhưng vẫn lớn hơn 0.5), do đó không kích hoạt \texttt{unknown}. Đây là vùng confidence cần theo dõi thêm khi môi trường nhiễu để hạn chế false positive.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\linewidth]{graphics/fig/ui_runtime_dog.png}
+    \caption{Kết quả realtime trên Smart Audio Monitor: hệ thống phát hiện lớp \texttt{DOG} với confidence 91.8\%, thể hiện dự đoán nằm trong vùng tin cậy cao và ổn định trong đoạn quan sát.}
+    \label{fig:ui_runtime_dog}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.98\linewidth]{graphics/fig/ui_runtime_switch_laughing_dog.png}
+    \caption{Minh hoạ label switch trong Event Logs: \texttt{LAUGHING} (65\%) tại 01:44:12 chuyển sang \texttt{DOG} (61\%) tại 01:44:13; cả hai vượt ngưỡng \texttt{ENV\_CONF\_THRESHOLD=0.5} nên không bị ép về \texttt{unknown}.}
+    \label{fig:ui_runtime_switch}
+\end{figure}

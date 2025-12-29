@@ -8,5 +8,111 @@
 \providecommand\HyField@AuxAddToCoFields[2]{}
 \babel@aux{vietnamese}{}
 \pgfsyspdfmark {pgfid1}{5594039}{47034581}
-\@input{contents/sect1.aux}
-\gdef \@abspage@last{2}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Giới thiệu}{4}{section.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Cơ sở lý thuyết}{4}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Kỹ thuật xử lý tín hiệu số}{4}{subsection.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.1}Lý thuyết Bộ lọc Thông dải (Bandpass Filter)}{4}{subsubsection.2.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.2}Xấp xỉ Butterworth}{5}{subsubsection.2.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.1.3}Hiện thực hóa trong miền số (Digital Implementation)}{6}{subsubsection.2.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Huấn luyện mô hình nhận diện âm thanh}{6}{subsection.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.1}Biểu diễn đặc trưng Log-Mel Spectrogram}{6}{subsubsection.2.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.2}Chuẩn hóa dữ liệu (Data Normalization)}{7}{subsubsection.2.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.3}Data Augmentation để tăng khả năng tổng quát hóa}{8}{subsubsection.2.2.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2.1}{\ignorespaces Minh họa Frequency Masking: các kênh tần số liên tiếp bị che.}}{9}{figure.caption.2}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:freq_masking}{{2.1}{9}{Minh họa Frequency Masking: các kênh tần số liên tiếp bị che}{figure.caption.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.2}{\ignorespaces Minh họa Time Masking: các bước thời gian liên tiếp bị che.}}{9}{figure.caption.3}\protected@file@percent }
+\newlabel{fig:time_masking}{{2.2}{9}{Minh họa Time Masking: các bước thời gian liên tiếp bị che}{figure.caption.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.4}Kiến trúc CNN cho phân loại âm thanh}{10}{subsubsection.2.2.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.5}Hàm mất mát Cross-Entropy và Label Smoothing}{10}{subsubsection.2.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.6}Tối ưu hóa và chiến lược học}{11}{subsubsection.2.2.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.7}Mất cân bằng lớp và Class Weight}{11}{subsubsection.2.2.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.8}Chiến lược huấn luyện và đánh giá}{12}{subsubsection.2.2.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {2.2.9}Ngưỡng tin cậy cho lớp Unknown}{13}{subsubsection.2.2.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}System Architecture}{14}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Tổng quan kiến trúc hệ thống}{14}{subsection.3.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.1}{\ignorespaces Luồng xử lý tổng quan của hệ thống theo pipeline}}{14}{figure.caption.4}\protected@file@percent }
+\newlabel{fig:system_architecture}{{3.1}{14}{Luồng xử lý tổng quan của hệ thống theo pipeline}{figure.caption.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Module phần cứng: SoundDetector (USB VAD/DOA)}{14}{subsection.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.1}Mô tả chức năng}{14}{subsubsection.3.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.2.2}Giao tiếp USB}{15}{subsubsection.3.2.2}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {1}{\ignorespaces Ví dụ đọc DOA bằng USB control transfer}}{15}{lstlisting.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Module DSP Processor: AudioProcessor}{15}{subsection.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.1}Mô tả chức năng}{15}{subsubsection.3.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.3.2}Pipeline xử lý}{16}{subsubsection.3.3.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces Pipeline xử lý DSP trước khi đưa tín hiệu vào mô hình AI.}}{16}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:dsp_pipeline}{{3.2}{16}{Pipeline xử lý DSP trước khi đưa tín hiệu vào mô hình AI}{figure.caption.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Module AI Classifier: AudioClassifier}{16}{subsection.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.1}Mô tả chức năng}{16}{subsubsection.3.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.2}Post-processing và ổn định theo thời gian}{16}{subsubsection.3.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Module Integration Pipeline: SmartAudioSystem}{17}{subsection.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.1}Mô tả chức năng}{17}{subsubsection.3.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.5.2}Quản lý luồng xử lý}{17}{subsubsection.3.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6}Module User Interface}{17}{subsection.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.6.1}GUI}{17}{subsubsection.3.6.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces Mô hình threading cho GUI}}{18}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:gui_threading}{{3.3}{18}{Mô hình threading cho GUI}{figure.caption.6}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.6.2}CLI}{18}{subsubsection.3.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Implementation}{19}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Cấu trúc mã nguồn}{19}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.1}Tổng quan tổ chức code}{19}{subsubsection.4.1.1}\protected@file@percent }
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {2}{\ignorespaces Cấu trúc thư mục dự án}}{19}{lstlisting.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.1.2}Chi tiết các module chính}{19}{subsubsection.4.1.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces Chi tiết các module chính trong hệ thống}}{20}{table.caption.7}\protected@file@percent }
+\newlabel{tab:code_structure}{{4.1}{20}{Chi tiết các module chính trong hệ thống}{table.caption.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Pipeline tích hợp trong \texttt  {smart\_audio\_pipeline.py}}{20}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}Luồng xử lý trong \texttt  {process\_and\_predict()}}{20}{subsubsection.4.2.1}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Luồng xử lý trong hàm \texttt  {process\_and\_predict()}.}}{21}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:pipeline_flow}{{4.1}{21}{Luồng xử lý trong hàm \texttt {process\_and\_predict()}}{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}Pseudo-code triển khai}{21}{subsubsection.4.2.2}\protected@file@percent }
+\newlabel{lst:process_predict}{{3}{21}{Pseudo-code: \texttt {process\_and\_predict()}}{lstlisting.3}{}}
+\@writefile{lol}{\contentsline {lstlisting}{\numberline {3}{\ignorespaces Pseudo-code: \texttt  {process\_and\_predict()}}}{21}{lstlisting.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.3}Định dạng \textit  {state} trả về}{22}{subsubsection.4.2.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.2}{\ignorespaces Định dạng state dictionary trả về từ pipeline.}}{22}{table.caption.9}\protected@file@percent }
+\newlabel{tab:state_format}{{4.2}{22}{Định dạng state dictionary trả về từ pipeline}{table.caption.9}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.4}Cơ chế realtime trong GUI (thread + queue)}{22}{subsubsection.4.2.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Cơ chế realtime với worker thread và queue}}{23}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:realtime_mechanism}{{4.2}{23}{Cơ chế realtime với worker thread và queue}{figure.caption.10}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.5}Dừng/chạy lại an toàn}{23}{subsubsection.4.2.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Hiện thực bộ xử lý âm thanh}{23}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.1}Phương thức khởi tạo:\texttt  {\_\_init\_\_}}{24}{subsubsection.4.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.2}Phương thức \texttt  {apply\_bandpass(chunk)}}{24}{subsubsection.4.3.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces Đáp ứng tần số của bộ lọc Bandpass -Butterworth bậc 4.}}{25}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:bandpass_amp}{{4.3}{25}{Đáp ứng tần số của bộ lọc Bandpass -Butterworth bậc 4}{figure.caption.11}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Đáp ứng pha của bộ lọc.}}{25}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:bandpass_phase}{{4.4}{25}{Đáp ứng pha của bộ lọc}{figure.caption.12}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.3}Phương thức \texttt  {apply\_spectral\_gate(chunk)}}{26}{subsubsection.4.3.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces Quy trình Spectral Gating: (1) Tín hiệu thời gian, (2) Phân tích phổ và chọn lọc họa âm, (3) Tạo mặt nạ nhị phân để loại bỏ nhiễu nền.}}{27}{figure.caption.13}\protected@file@percent }
+\newlabel{fig:spectral_process}{{4.5}{27}{Quy trình Spectral Gating: (1) Tín hiệu thời gian, (2) Phân tích phổ và chọn lọc họa âm, (3) Tạo mặt nạ nhị phân để loại bỏ nhiễu nền}{figure.caption.13}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.4}Phương thức \texttt  {apply\_agc(chunk)}}{27}{subsubsection.4.3.4}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.6}{\ignorespaces Đặc tuyến truyền đạt Input/Output của hệ thống AGC và Noise Gate.}}{28}{figure.caption.14}\protected@file@percent }
+\newlabel{fig:agc_static}{{4.6}{28}{Đặc tuyến truyền đạt Input/Output của hệ thống AGC và Noise Gate}{figure.caption.14}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.5}Phương thức \texttt  {process(chunk)}}{28}{subsubsection.4.3.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.6}Phương thức \texttt  {reset\_states()}}{29}{subsubsection.4.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Hiện thực mô hình học máy}{29}{subsection.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.1}Tiền xử lý dữ liệu}{29}{subsubsection.4.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.2}Huấn luyện mô hình}{31}{subsubsection.4.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.3}Suy luận thời gian thực}{33}{subsubsection.4.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.4}Hậu xử lý theo thời gian:}{34}{subsubsection.4.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Kết quả kiểm thử \& Đánh giá}{35}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Kiểm thử bộ xử lý âm thanh}{35}{subsection.5.1}\protected@file@percent }
+\newlabel{fig:before}{{5.1a}{35}{Tín hiệu thô}{figure.caption.15}{}}
+\newlabel{sub@fig:before}{{a}{35}{Tín hiệu thô}{figure.caption.15}{}}
+\newlabel{fig:after}{{5.1b}{35}{Sau khi xử lý}{figure.caption.15}{}}
+\newlabel{sub@fig:after}{{b}{35}{Sau khi xử lý}{figure.caption.15}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.1}{\ignorespaces So sánh dạng sóng tín hiệu trước và sau khi đi qua luồng xử lý của AudioProcessor.}}{35}{figure.caption.15}\protected@file@percent }
+\newlabel{fig:comparison}{{5.1}{35}{So sánh dạng sóng tín hiệu trước và sau khi đi qua luồng xử lý của AudioProcessor}{figure.caption.15}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Kiểm thử mô hình học máy}{36}{subsection.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}Stability}{36}{subsubsection.5.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.2}Confidence}{37}{subsubsection.5.2.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5.2}{\ignorespaces Kết quả realtime trên Smart Audio Monitor: hệ thống phát hiện lớp \texttt  {DOG} với confidence 91.8\%, thể hiện dự đoán nằm trong vùng tin cậy cao và ổn định trong đoạn quan sát.}}{37}{figure.caption.16}\protected@file@percent }
+\newlabel{fig:ui_runtime_dog}{{5.2}{37}{Kết quả realtime trên Smart Audio Monitor: hệ thống phát hiện lớp \texttt {DOG} với confidence 91.8\%, thể hiện dự đoán nằm trong vùng tin cậy cao và ổn định trong đoạn quan sát}{figure.caption.16}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.3}{\ignorespaces Minh hoạ label switch trong Event Logs: \texttt  {LAUGHING} (65\%) tại 01:44:12 chuyển sang \texttt  {DOG} (61\%) tại 01:44:13; cả hai vượt ngưỡng \texttt  {ENV\_CONF\_THRESHOLD=0.5} nên không bị ép về \texttt  {unknown}.}}{37}{figure.caption.17}\protected@file@percent }
+\newlabel{fig:ui_runtime_switch}{{5.3}{37}{Minh hoạ label switch trong Event Logs: \texttt {LAUGHING} (65\%) tại 01:44:12 chuyển sang \texttt {DOG} (61\%) tại 01:44:13; cả hai vượt ngưỡng \texttt {ENV\_CONF\_THRESHOLD=0.5} nên không bị ép về \texttt {unknown}}{figure.caption.17}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Kết luận}{38}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Tóm tắt kết quả đạt được}{38}{subsection.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Đánh giá hiệu suất và ưu điểm}{38}{subsection.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Những hạn chế}{38}{subsection.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Hướng phát triển tương lai}{39}{subsection.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5}Kết luận cuối cùng}{39}{subsection.6.5}\protected@file@percent }
+\gdef \@abspage@last{39}

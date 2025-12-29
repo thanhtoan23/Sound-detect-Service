@@ -1,0 +1,231 @@
+\subsection{Hiện thực mô hình học máy}
+\subsubsection{Tiền xử lý dữ liệu}
+
+Mục tiêu của tầng tiền xử lý là biến đổi dữ liệu âm thanh thô (file \textit{.wav}) thành tensor đặc trưng có kích thước cố định để đưa vào mô hình CNN. Quy trình được triển khai theo chuỗi script:
+\textit{make\_subset.py} $\rightarrow$ \textit{augment.py} $\rightarrow$ \textit{preprocess.py}.
+\textbf{Các lớp được chọn để tạo subset:}
+Tập dữ liệu con được tạo bằng cách giữ nguyên các lớp mục tiêu trong \textit{TARGET\_CLASSES}, bao gồm:
+\{\textit{dog, cat, water\_drops, laughing, coughing, door\_wood\_knock, clock\_alarm, crying\_baby, engine, frog, mouse\_click, rooster, car\_horn}\}.
+Các lớp còn lại trong ESC-50 được gom về lớp \textit{unknown} (giới hạn số mẫu bằng \textit{UNKNOWN\_MAX\_SAMPLES}) để mô hình có khả năng phản hồi ``không chắc chắn'' khi gặp âm thanh ngoài tập mục tiêu.
+\begin{itemize}
+    \item \textbf{Bước 1 -- Tạo dataset con + gán lớp \textit{unknown} (\textit{make\_subset.py}):}
+    \begin{itemize}
+        \item \textbf{Mục đích:} Chọn ra các lớp mục tiêu để huấn luyện và gom phần còn lại về một lớp ``không xác định'' (\textit{unknown}) nhằm tăng khả năng tổng quát hoá khi chạy thực tế.
+        \item \textbf{Thiết lập:}
+        \begin{itemize}
+            \item \textit{TARGET\_CLASSES}: tập lớp cần giữ nguyên (ví dụ: \textit{dog, cat, laughing, ...}).
+            \item \textit{UNKNOWN\_MAX\_SAMPLES}: giới hạn số mẫu của lớp \textit{unknown} để tránh lệch phân phối dữ liệu.
+            \item \textit{TRAIN\_RATIO/VAL\_RATIO/TEST\_RATIO}: tỉ lệ chia dữ liệu (train/val/test) theo kiểu \textbf{stratified} (mỗi lớp đều có mẫu ở cả 3 tập).
+            \item \textit{RANDOM\_STATE}: cố định seed để tái lập thí nghiệm.
+        \end{itemize}
+        \item \textbf{Output:} Tạo thư mục dataset con (ví dụ \textit{ESC50\_subset\_with\_unknown/}) và các file CSV split:
+        \textit{...train.csv}, \textit{...val.csv}, \textit{...test.csv}.
+        \item \textbf{Lưu ý kỹ thuật:} Chia stratified theo từng lớp giúp tránh tình trạng lớp hiếm bị ``mất'' ở val/test (đặc biệt khi mỗi lớp có ít mẫu).
+    \end{itemize}
+
+    \item \textbf{Bước 2 -- Augment dữ liệu + trộn noise theo SNR (\textit{augment.py}):}
+    \begin{itemize}
+        \item \textbf{Mục đích:} Tăng độ đa dạng của dữ liệu train để mô hình bền vững hơn trước thay đổi tốc độ nói, cao độ, gain và nhiễu môi trường.
+        \item \textbf{Phạm vi áp dụng:}
+        \begin{itemize}
+            \item \textbf{Chỉ augment cho train} (tạo bộ \textit{train\_aug}).
+            \item \textbf{Test-noisy} được tạo riêng chỉ bằng trộn noise (không augment hình học) để đánh giá worst-case hợp lý.
+        \end{itemize}
+        \item \textbf{Các phép biến đổi (ví dụ cấu hình):}
+        \begin{itemize}
+            \item \textit{augment\_speed}: time-stretch với \textit{rate} ngẫu nhiên trong $[0.9, 1.1]$.
+            \item \textit{augment\_pitch}: pitch shift với \textit{n\_steps} ngẫu nhiên trong $[-2, 2]$ semitone.
+            \item \textit{augment\_gain}: thay đổi gain trong khoảng $[-6, 6]$ dB.
+            \item \textit{augment\_shift}: dịch thời gian (không wrap-around) với \textit{shift\_max} mặc định $0.2$ (tức $\pm 20\%$ độ dài).
+            \item \textit{random\_augment\_combo\_train}: mỗi mẫu chọn ngẫu nhiên tối đa 2 phép biến đổi, giúp đa dạng nhưng vẫn tránh phá vỡ đặc trưng lớp.
+        \end{itemize}
+        \item \textbf{Trộn noise theo SNR:}
+        \begin{itemize}
+            \item \textit{TRAIN\_NOISE\_PROB}: xác suất trộn noise (ví dụ $0.7$).
+            \item \textit{TRAIN\_NOISE\_SNR\_RANGE\_DB}: khoảng SNR (ví dụ $(10, 30)$ dB).
+            \item Với test-noisy: \textit{TEST\_NOISE\_PROB} thường đặt $1.0$ để đánh giá ``luôn có nhiễu''.
+        \end{itemize}
+        \item \textbf{Output:} Sinh ra thư mục train augmented và CSV tương ứng.
+    \end{itemize}
+
+    \item \textbf{Bước 3 -- Trích đặc trưng log-mel và đóng gói \textit{.npz} (\textit{preprocess.py}):}
+    \begin{itemize}
+        \item \textbf{Input:} File CSV (train\_aug/val/test/test\_noisy) + thư mục audio tương ứng.
+        \item \textbf{Chuẩn hoá waveform:}
+        \begin{itemize}
+            \item Resample về $f_s = 16$ kHz.
+            \item Chuẩn hoá độ dài về \textit{DEFAULT\_DURATION = 5.0s} $\Rightarrow$ \textit{DEFAULT\_SAMPLES = 80000} mẫu (pad/cắt).
+        \end{itemize}
+        \item \textbf{Tính Mel-spectrogram và log-scale:}
+        \begin{itemize}
+            \item \textit{N\_FFT = 1024}, \textit{HOP\_LENGTH = 512}, \textit{N\_MELS = 64}.
+            \item Mel-spectrogram được chuyển sang dB bằng \textit{power\_to\_db} (log-mel).
+        \end{itemize}
+        \item \textbf{Cố định số frame theo thời gian:}
+        \begin{itemize}
+            \item \textit{TIME\_STEPS = 128}.
+            \item Nếu số frame $<128$ thì pad, nếu $>128$ thì cắt bớt.
+            \item Sau bước này, tensor có dạng $(T, M) = (128, 64)$.
+        \end{itemize}
+        \item \textbf{Chuẩn hoá miền giá trị:}
+        \begin{itemize}
+            \item Dùng Min-Max normalization đưa về $[0,1]$:
+            \[
+                \hat{x} = \frac{x - x_{\min}}{x_{\max} - x_{\min} + 10^{-6}}
+            \]
+        \end{itemize}
+        \item \textbf{Đóng gói dữ liệu:}
+        \begin{itemize}
+            \item \textit{X}: $(N, 128, 64, 1)$ (thêm kênh 1 để phù hợp CNN 2D).
+            \item \textit{y}: nhãn dạng index.
+            \item \textit{classes}: danh sách lớp theo thứ tự mapping.
+        \end{itemize}
+        \item \textbf{Lưu ý kỹ thuật quan trọng (mapping lớp nhất quán):}
+        \begin{itemize}
+            \item Nếu mỗi split tự sort \textit{classes} theo CSV của riêng nó, mapping có thể lệch.
+            \item Vì vậy \textit{preprocess.py} hỗ trợ tham số \textit{--classes\_from} để lấy mapping chuẩn (thường từ \textit{train\_aug.npz}) và áp cho val/test/noisy.
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+\subsubsection{Huấn luyện mô hình}
+
+Mô hình phân loại được huấn luyện trên tensor log-mel $(128,64,1)$, đầu ra là phân phối xác suất trên các lớp (bao gồm cả \textit{unknown}). Pipeline huấn luyện sử dụng \textit{tf.data} để tối ưu tốc độ đọc dữ liệu và có bổ sung \textbf{SpecAugment} nhằm tăng tính bền vững với biến thiên thời gian/tần số.
+
+\begin{itemize}
+    \item \textbf{Input:} \textit{train\_aug.npz} (X,y,classes), \textit{val.npz}, \textit{test.npz}, và (tuỳ chọn) \textit{test\_noisy.npz}.
+    \item \textbf{Tiền xử lý nhãn:} Nhãn \textit{y} được chuyển sang one-hot với độ sâu \textit{num\_classes}.
+    \item \textbf{Thiết lập training:}
+    \begin{itemize}
+        \item \textit{BATCH = 64}.
+        \item \textbf{Loss:} Categorical Crossentropy với \textit{label\_smoothing = 0.05}.
+        \item \textbf{Optimizer:} Adam với learning rate $1 \times 10^{-3}$.
+        \item \textbf{Epochs:} tối đa \textit{80}.
+        \item \textbf{Callbacks:}
+        \begin{itemize}
+            \item \textit{ModelCheckpoint}: lưu model tốt nhất theo \textit{val\_loss}.
+            \item \textit{ReduceLROnPlateau}: giảm LR khi \textit{val\_loss} plateau (factor $0.5$, patience $3$, min\_lr $10^{-6}$).
+            \item \textit{EarlyStopping}: dừng sớm khi không cải thiện (patience $12$), phục hồi weight tốt nhất.
+        \end{itemize}
+    \end{itemize}
+
+    \item \textbf{SpecAugment (augment trên spectrogram):}
+    \begin{itemize}
+        \item Xác suất áp dụng: \textit{p = 0.9}.
+        \item Frequency masking: tối đa \textit{freq\_mask\_max = 14} bins.
+        \item Time masking: tối đa \textit{time\_mask\_max = 40} frames.
+        \item Mục đích: giúp mô hình ít phụ thuộc vào một dải tần hay một đoạn thời gian cố định, tăng khả năng chịu nhiễu và biến thiên môi trường.
+    \end{itemize}
+
+    \item \textbf{Kiến trúc CNN (tóm tắt):}
+    \begin{itemize}
+        \item 3 block tích chập với số kênh \textit{[32, 64, 128]}.
+        \item Mỗi block gồm 2 lớp \textit{Conv2D(3x3)} + \textit{BatchNorm} + \textit{ReLU}, sau đó \textit{MaxPool(2x2)} và \textit{Dropout(0.25)}.
+        \item Sau cùng: \textit{Conv2D(256)} $\rightarrow$ \textit{BatchNorm} $\rightarrow$ \textit{ReLU} $\rightarrow$ \textit{GlobalAveragePooling} $\rightarrow$ \textit{Dropout(0.5)} $\rightarrow$ \textit{Dense(num\_classes, softmax)}.
+    \end{itemize}
+
+    \item \textbf{Xử lý mất cân bằng lớp (Class weight):}
+    \begin{itemize}
+        \item Trọng số lớp được tính theo tần suất xuất hiện (lớp hiếm được tăng trọng số).
+        \item Ngoài ra có thể ``boost'' thêm một số lớp khó/quan trọng (\textit{engine}, \textit{rooster}, \textit{dog}) để cải thiện macro-F1.
+    \end{itemize}
+
+    \item \textbf{Xuất mô hình triển khai:}
+    \begin{itemize}
+        \item Mô hình tốt nhất được lưu dạng \textit{.keras} (checkpoint), sau đó chuyển sang file \textit{textbf{h5}} để dễ load trong ứng dụng realtime.
+        \item (Tuỳ chọn) Có thể tinh chỉnh ngưỡng \textit{unknown} bằng cách quét threshold trên tập \textit{test\_noisy} và chọn ngưỡng tối ưu theo macro-F1.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Suy luận thời gian thực}
+
+Trong triển khai realtime, hệ thống đọc dữ liệu từ microphone theo từng \textit{chunk} và thực hiện phân loại online. Điểm quan trọng của thiết kế là \textbf{không dự đoán ở mọi chunk}, mà dùng buffer + hop + smoothing để tăng ổn định đầu ra.
+
+\begin{itemize}
+    \item \textbf{Thiết lập audio stream:}
+    \begin{itemize}
+        \item \textit{DEFAULT\_RATE = 16000} Hz.
+        \item \textit{DEFAULT\_CHUNK = 1024} mẫu mỗi lần đọc.
+        \item Dữ liệu đọc từ mic dạng \textit{int16} và được chuẩn hoá về float32 trong miền $[-1,1]$ bằng phép chia \textit{/32768.0}.
+    \end{itemize}
+
+    \item \textbf{Cơ chế buffer cửa sổ:}
+    \begin{itemize}
+        \item Hệ thống duy trì \textit{env\_buffer} tối đa \textit{ENV\_DURATION\_SEC = 5.0s} (tương ứng 80000 mẫu).
+        \item Mỗi lần có chunk mới, chunk được nối vào buffer; nếu vượt quá 5s thì cắt giữ phần cuối.
+        \item Khi suy luận, hệ thống lấy cửa sổ gần nhất \textit{ENV\_WINDOW\_DURATION\_SEC = 2.0s} (tương ứng 32000 mẫu) để phản ánh trạng thái môi trường ``hiện tại''.
+    \end{itemize}
+
+    \item \textbf{Gating theo năng lượng (RMS):}
+    \begin{itemize}
+        \item RMS được tính nhanh:
+        \[
+            \mathrm{RMS} = \sqrt{\mathbb{E}[x^2] + 10^{-9}}
+        \]
+        \item Nếu \textit{rms < ENV\_MIN\_RMS} (ví dụ 0.005), hệ thống tránh đưa ra dự đoán mới để giảm false trigger trong vùng im lặng/nhiễu nhỏ.
+    \end{itemize}
+
+    \item \textbf{Tiền xử lý khi inference:}
+    \begin{itemize}
+        \item Dù cửa sổ lấy là 2s, trước khi trích đặc trưng hệ thống vẫn pad/cắt về chuẩn 5s để thống nhất với mô hình đã train.
+        \item Log-mel sử dụng đúng tham số như training: \textit{n\_fft=1024}, \textit{hop=512}, \textit{n\_mels=64}, cắt/pad thời gian về \textit{128} frame, và Min-Max về $[0,1]$.
+    \end{itemize}
+
+    \item \textbf{Áp ngưỡng confidence cho \textit{unknown}:}
+    \begin{itemize}
+        \item Sau khi có nhãn dự đoán và xác suất tương ứng, nếu điểm dự đoán \textbf{bé hơn} \textit{ENV\_CONF\_THRESHOLD} thì output bị ép thành \textit{unknown}.
+        \item Cách này giúp hệ thống ``thừa nhận không chắc chắn'' thay vì trả về nhãn sai một cách tự tin.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Hậu xử lý theo thời gian:}
+
+Do dự đoán theo từng khung ngắn dễ bị rung (label flicker) và nhảy nhãn khi môi trường nhiễu, hệ thống thêm một tầng hậu xử lý theo thời gian gồm 4 cơ chế: \textbf{hop}, \textbf{smoothing}, \textbf{silence reset}, và \textbf{fast switch}.
+
+\begin{enumerate}
+    \item \textbf{Hop (giảm tần suất predict để ổn định):}
+    \begin{itemize}
+        \item Tham số: \textit{ENV\_PRED\_HOP\_SEC} (ví dụ 0.5s).
+        \item Ý tưởng: chỉ gọi model mỗi \textit{0.5s}. Nếu chưa tới thời điểm hop, hệ thống giữ kết quả gần nhất (\textit{last\_label/last\_conf}) để UI/logic không bị thay đổi liên tục.
+        \item Lợi ích: giảm nhạy với nhiễu tức thời, giảm tải tính toán khi chạy realtime.
+    \end{itemize}
+
+    \item \textbf{Temporal smoothing (trung bình xác suất theo cửa sổ):}
+    \begin{itemize}
+        \item Tham số: \textit{ENV\_SMOOTH\_K} (ví dụ $K=3$, thường 3--7 là hợp lý).
+        \item Cách làm: mỗi lần predict thu được vector xác suất \textit{probs}. Lưu các vector này trong hàng đợi độ dài $K$:
+        \[
+            \bar{\mathbf{p}} = \frac{1}{K}\sum_{i=1}^{K}\mathbf{p}_i
+        \]
+        Sau đó chọn nhãn bằng \(\arg\max(\bar{\mathbf{p}})\) và confidence là giá trị lớn nhất của \(\bar{\mathbf{p}}\).
+        \item Lợi ích: làm mượt đầu ra, chống nhảy nhãn do một dự đoán bất thường.
+        \item Đánh đổi: tăng độ trễ nhỏ (vì lấy trung bình trên nhiều lần dự đoán).
+    \end{itemize}
+
+    \item \textbf{Reset khi im lặng kéo dài (silence reset):}
+    \begin{itemize}
+        \item Tham số: \textit{ENV\_RESET\_ON\_SILENCE\_SEC} (ví dụ 0.8s).
+        \item Nếu \textit{rms} liên tục thấp hơn \textit{ENV\_MIN\_RMS} trong thời gian $>0.8s$, hệ thống:
+        \begin{itemize}
+            \item reset \textit{env\_buffer},
+            \item xoá lịch sử \textit{env\_prob\_hist},
+            \item trả hệ thống về trạng thái ``chờ tín hiệu''.
+        \end{itemize}
+        \item Mục đích: tránh trường hợp label cũ bị ``kéo dài'' qua vùng im lặng (giữ sai ngữ cảnh).
+    \end{itemize}
+
+    \item \textbf{Fast switch (chuyển nhanh khi nhãn mới đủ chắc):}
+    \begin{itemize}
+        \item Tham số: \textit{ENV\_SWITCH\_CONF} (0.60) và \textit{ENV\_SWITCH\_STREAK} (2).
+        \item Khi nhãn raw (chưa smoothing) đổi sang lớp khác và có confidence đủ cao, nếu hiện tượng này lặp lại liên tiếp đủ \textit{STREAK} lần thì hệ thống \textbf{xóa history smoothing} để chuyển nhanh sang nhãn mới.
+        \item Lợi ích: giảm độ trễ khi môi trường thật sự đổi trạng thái (ví dụ từ \textit{engine} sang \textit{car\_horn}), nhưng vẫn chống nhảy nhãn do một lần dự đoán sai.
+    \end{itemize}
+\end{enumerate}
+
+\noindent\textbf{Tóm tắt luồng realtime (mỗi chunk):}
+\begin{enumerate}
+    \item Đọc \textit{chunk} $\rightarrow$ chuẩn hoá float32 $\rightarrow$ tính RMS.
+    \item Nếu RMS thấp kéo dài: reset trạng thái.
+    \item Nếu đủ điều kiện (đủ buffer + tới hop): preprocess $\rightarrow$ predict \textit{probs}.
+    \item Cập nhật smoothing history $\rightarrow$ lấy trung bình $\rightarrow$ ra nhãn.
+    \item Nếu confidence thấp: ép nhãn thành \textit{unknown}.
+\end{enumerate}

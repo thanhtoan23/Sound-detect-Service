@@ -38,6 +38,10 @@
 \RequirePackage{xstring} % For string manipulation
 \RequirePackage{extramarks}
 \RequirePackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usepackage{listings}
+\usepackage{placeins}
 
 % Some packages that seem pretty redundant
 \RequirePackage{geometry,graphicx,indentfirst,setspace}
@@ -191,7 +195,7 @@
         {}                                                 \\
         \Large\@reporttype                                 \\
         {}                                                 \\
-        \Huge\parbox[c]{0.6\linewidth}{\centering \@title} \\
+        \Huge\parbox[c]{0.9\linewidth}{\centering \@title} \\
         {}                                                 \\
         \bottomrule
         \end{tabular}

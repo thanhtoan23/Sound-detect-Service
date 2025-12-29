@@ -1,0 +1,138 @@
+\subsection{Hiện thực bộ xử lý âm thanh}
+
+Trong đồ án này file audio\_processor.py đóng vai trò như một bộ xử lý âm thanh đầu vào. Tại đây, âm thanh thô được nhận từ respeaker sẽ được sẽ được lọc và làm sạch nhằm đảm bảo chất lượng âm thanh tốt nhất trước khi đưa vào phân loại. Dưới đây là mô tả chi tiết chức năng và giải thuật của từng phương thức thành phần.
+
+\subsubsection{Phương thức khởi tạo:\texttt{\_\_init\_\_}}
+
+Đây là nơi thiết lập các tham số vận hành cho hệ thống với tần số lấy mẫu $f_s = 16000$ Hz với chunk size là 1024 mẫu. Dưới đây là các tham số cho các tầng xử lý phía sau:
+
+\begin{itemize}
+    \item \textbf{Bandpass Filter:} 
+    Hệ thống sử dụng bộ lọc IIR Butterworth bậc 4. Ngoài ra với mục tiêu tối ưu hóa quá trình tính toán, bộ lọc này được tách thành chuỗi các bộ lọc con bậc hai nối tiếp nhau theo cấu trúc SOS. Từ đó hạn chế tối đa các sai số làm tròn của máy tính, đảm bảo kết quả lọc chính xác và hệ thống vận hành ổn định hơn.
+    \begin{itemize}
+        \item Tần số cắt thấp ($f_{low}$): $100$ Hz.
+        \item Tần số cắt cao ($f_{high}$): $7500$ Hz.
+    \end{itemize}
+
+    \item \textbf{Spectral Gating:}
+    \begin{itemize}
+        \item \texttt{spectral\_threshold} $= 0.6$: Ngưỡng cắt phổ. Tham số này xác định mức độ mạnh tay khi loại bỏ các thành phần tần số yếu hơn mức sàn nhiễu ước tính.
+    \end{itemize}
+    
+    \item \textbf{AGC \& Noise Gate:}
+    \begin{itemize}
+        \item \texttt{agc\_max\_gain} $ = 15.0$ dB: Giới hạn mức khuếch đại tối đa.
+        \item \texttt{gate\_threshold} $= 0.012$: Ngưỡng biên độ RMS xác định ranh giới phân biệt giữa Tín hiệu và Nhiễu.
+        \item \texttt{gate\_ratio} $= 0.10$: Hệ số suy giảm áp dụng cho vùng nhiễu. 
+        \item \texttt{agc\_target\_rms} $ = 0.12$: Mức năng lượng mục tiêu mà bộ AGC sẽ cố gắng đưa tín hiệu giọng nói đạt tới.
+        \item \texttt{agc\_smooth} $= 0.1$: Hệ số làm mượt cho việc thay đổi Gain trong vùng tiếng nói, giúp âm lượng thay đổi tự nhiên, không bị giật cục.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Phương thức \texttt{apply\_bandpass(chunk)}}
+Phương thức này chịu trách nhiệm loại bỏ các thành phần tần số không mong muốn nằm ngoài dải giọng nói.
+\begin{itemize}
+    \item \textbf{Input:} Mảng numpy chứa khung tín hiệu âm thanh thô.
+    \item \textbf{Xử lý:} Sử dụng hàm \texttt{signal.sosfilt} để áp dụng bộ lọc Butterworth lên dữ liệu. 
+    \item \textbf{Lưu ý kỹ thuật:} Quan trọng nhất ở bước này là việc truyền và cập nhật tham số 
+    \item \textbf{Output:} Tín hiệu đã được lọc dải thông.
+\end{itemize}
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{graphics/img/bandpass_amppng.png}
+    \caption{Đáp ứng tần số của bộ lọc Bandpass -Butterworth bậc 4.}
+    \label{fig:bandpass_amp}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{graphics/img/bandpass_phase.png}
+    \caption{Đáp ứng pha của bộ lọc.}
+    \label{fig:bandpass_phase}
+\end{figure}
+
+\subsubsection{Phương thức \texttt{apply\_spectral\_gate(chunk)}}
+Phương thức này thực hiện giảm nhiễu dựa trên miền tần số. Các bước thực hiện được miêu tả như dưới đây:
+
+\begin{itemize}
+    \item \textbf{Biến đổi thuận (FFT):} Chuyển tín hiệu $x[n]$ sang miền tần số bằng hàm \texttt{np.fft.rfft}:
+    \[ X[k] = \mathcal{F}\{x[n]\} \]
+    
+    \item \textbf{Tính toán ngưỡng:} Xác định mức sàn nhiễu trung bình (\texttt{noise\_floor}). Ngưỡng cắt được thiết lập là:
+    \[ T = \text{noise\_floor} \times 0.6 \]
+    
+    \item \textbf{Masking:} Tạo mặt nạ nhị phân $M[k]$ để giữ lại hoặc loại bỏ các thành phần tần số:
+    \[
+    M[k] = 
+    \begin{cases} 
+    1 & \text{nếu } |X[k]| \geq T \\
+    0 & \text{nếu } |X[k]| < T 
+    \end{cases}
+    \]
+    Tín hiệu sau lọc: $\hat{X}[k] = X[k] \cdot M[k]$.
+    
+    \item \textbf{Biến đổi ngược (IFFT):} Khôi phục tín hiệu về miền thời gian:
+    \[ \hat{x}[n] = \mathcal{F}^{-1}\{\hat{X}[k]\} \]
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{graphics/img/spectral.png}
+    \caption{Quy trình Spectral Gating: (1) Tín hiệu thời gian, (2) Phân tích phổ và chọn lọc họa âm, (3) Tạo mặt nạ nhị phân để loại bỏ nhiễu nền.}
+    \label{fig:spectral_process}
+\end{figure}
+
+\subsubsection{Phương thức \texttt{apply\_agc(chunk)}}
+Đây là sự kết hợp giữa Noise Gate và AGC.
+\begin{itemize}
+    \item \textbf{Tính RMS:} Đo năng lượng trung bình của khung tín hiệu.
+    \item \textbf{Phân loại tín hiệu:}
+    \begin{itemize}
+        \item Nếu $RMS <$ \texttt{gate\_threshold}: Hệ thống nhận định là vùng nền. Gain mục tiêu được đặt về \texttt{gate\_ratio} = 0.1 để dìm nhiễu nền xuống mức thấp nhưng không tắt hẳn.
+        \item Nếu $RMS \ge$ \texttt{gate\_threshold}: Hệ thống nhận định là vùng âm thanh mục tiêu. Gain mục tiêu được tính toán để đưa tín hiệu về mức chuẩn 0.12 RMS. Giá trị này bị kìm hãm bởi \texttt{agc\_max\_gain} để tránh phóng đại tiếng ồn đột ngột.
+    \end{itemize}
+\item \textbf{Làm mượt:}
+    Để tránh tình trạng xuất hiện các âm thanh nhiễu không đáng có khi cường độ âm thanh bị thay đổi đột ngột giữa vùng nền và vùng âm thanh mục tiêu, hệ số Gain thực tế ($G_{curr}$) sẽ được cập nhật theo công thức Trung bình động lũy thừa:
+    \begin{equation}
+        G_{curr}[n] = G_{curr}[n-1] \cdot (1 - S) + G_{target} 
+    \end{equation}
+
+    \item \textbf{Cắt giới hạn biên độ:}
+    Sau khi tín hiệu được nhân với hệ số Gain đã làm mượt, kết quả có thể vượt quá giới hạn biểu diễn của âm thanh kỹ thuật số. Từ đó xuất hiện rủi ro tạo ra các hài âm bậc cao rất chói tai.
+    \begin{itemize}
+        \item \textbf{Giải pháp:} Hệ thống sử dụng hàm \texttt{np.clip} để ép dữ liệu vào khoảng an toàn:
+        \begin{equation}
+            y[i] = \max(-1.0, \min(1.0, x[i] \cdot G_{curr}))
+        \end{equation}
+        \item \textbf{Ý nghĩa:} Đây là một tầng bảo vệ cuối cùng, đảm bảo rằng dù người dùng có nói sát mic hay Gain được đẩy lên cao, tín hiệu đầu ra vẫn luôn nằm trong chuẩn chuẩn hóa của hệ thống.
+    \end{itemize}
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{graphics/img/agc01.png}
+    \caption{Đặc tuyến truyền đạt Input/Output của hệ thống AGC và Noise Gate.}
+    \label{fig:agc_static}
+\end{figure}
+
+\subsubsection{Phương thức \texttt{process(chunk)}}
+Hàm điều phối chính, kết nối các bước xử lý thành một luồng tuần tự:
+
+    \begin{equation}
+    X_{raw} \xrightarrow{\text{Bandpass Filter}} X_{filt} \xrightarrow{\text{Spectral Gating}} X_{clean} \xrightarrow{\text{AGC \& Gate}} Y_{out}
+    \end{equation}
+    
+    Trong đó:
+    \begin{itemize}
+        \item \textbf{Tầng 1 (Bandpass):} Định hình dải tần sơ bộ, loại bỏ nhiễu hạ âm và siêu âm.
+        \item \textbf{Tầng 2 (Spectral Gating):} Thực hiện lọc nhiễu nền trong miền tần số dựa trên ngưỡng $\lambda=0.6$.
+        \item \textbf{Tầng 3 (AGC):} Thực hiện chuẩn hóa biên độ cuối cùng và áp dụng Noise Gate để làm sạch vùng im lặng.
+    \end{itemize}
+
+
+
+\subsubsection{Phương thức \texttt{reset\_states()}}
+Hàm tiện ích dùng để đặt lại toàn bộ trạng thái của bộ xử lý về mặc định. Phương thức này được dùng khi bắt đầu một phiên ghi âm mới.
+

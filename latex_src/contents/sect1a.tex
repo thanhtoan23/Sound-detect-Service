@@ -1,0 +1,246 @@
+\section{Cơ sở lý thuyết}
+
+\subsection{Kỹ thuật xử lý tín hiệu số}
+
+Trong xử lý tín hiệu số (DSP), việc thiết kế bộ lọc thường trải qua hai giai đoạn chính: xác định các thông số kỹ thuật trong miền tần số và lựa chọn hàm xấp xỉ phù hợp. Mục này trình bày cơ sở lý thuyết của bộ lọc thông dải (Bandpass Filter) sử dụng phương pháp xấp xỉ Butterworth và cách hiện thực hóa trong miền số dưới dạng bộ lọc đáp ứng xung vô hạn (IIR).
+
+\subsubsection{Lý thuyết Bộ lọc Thông dải (Bandpass Filter)}
+
+Bộ lọc thông dải là một hệ thống chọn lọc tần số, cho phép các thành phần tín hiệu nằm trong dải thông (passband) đi qua với độ suy giảm tối thiểu, đồng thời nén các thành phần tín hiệu nằm trong dải chắn (stopband).
+
+Các tham số kỹ thuật quan trọng bao gồm:
+\begin{itemize}
+    \item Dải thông (Passband): Khoảng tần số từ tần số cắt thấp ($f_L$) đến tần số cắt cao ($f_H$).
+    \item Tần số trung tâm ($f_0$): Tần số cộng hưởng hình học của bộ lọc, được xác định bởi:
+    \begin{equation}
+        f_0 = \sqrt{f_L \cdot f_H}
+    \end{equation}
+    \item Băng thông ($BW$ - Bandwidth): Độ rộng của dải tần số tại điểm suy giảm -3dB:
+    \begin{equation}
+        BW = f_H - f_L
+    \end{equation}
+    \item Hệ số phẩm chất ($Q$ - Quality Factor): Đại lượng đặc trưng cho độ chọn lọc của bộ lọc. Giá trị $Q$ càng cao, băng thông càng hẹp và bộ lọc càng chọn lọc:
+    \begin{equation}
+        Q = \frac{f_0}{BW}
+    \end{equation}
+\end{itemize}
+
+Hàm truyền đạt (Transfer Function) tổng quát của một bộ lọc thông dải bậc hai trong miền Laplace ($s$) có dạng:
+\begin{equation}
+    H_{BP}(s) = \frac{K \left(\frac{\omega_0}{Q}\right) s}{s^2 + \left(\frac{\omega_0}{Q}\right) s + \omega_0^2}
+\end{equation}
+Trong đó $\omega_0 = 2\pi f_0$ là tần số góc trung tâm.
+
+\subsubsection{Xấp xỉ Butterworth}
+
+Để xác định các hệ số của đa thức trong hàm truyền đạt, phương pháp xấp xỉ Butterworth thường được sử dụng nhờ đặc tính \textit{phẳng tối đa (maximally flat)} trong dải thông.
+
+Đặc điểm của bộ lọc Butterworth bậc $n$:
+\begin{itemize}
+    \item Đáp ứng biên độ: Không có gợn sóng (ripple) trong dải thông và suy giảm đơn điệu (monotonic) trong dải chắn.
+    \item Bình phương biên độ: Được xác định bởi công thức:
+    \begin{equation}
+        |H(j\omega)|^2 = \frac{1}{1 + \left(\frac{\omega}{\omega_c}\right)^{2n}}
+    \end{equation}
+    \item Độ dốc (Roll-off): Tại vùng chuyển tiếp, độ dốc suy giảm là $-20n$ dB/decade. Butterworth giúp bảo toàn dạng sóng của tín hiệu tốt hơn trong miền thời gian.
+    \item Phân bố cực: Các cực (poles) của hàm truyền đạt $H(s)$ nằm đều nhau trên nửa mặt phẳng trái của vòng tròn đơn vị trong mặt phẳng phức $s$.
+\end{itemize}
+
+\subsubsection{Hiện thực hóa trong miền số (Digital Implementation)}
+
+Trong các hệ thống nhúng và phần mềm, bộ lọc Butterworth được hiện thực hóa dưới dạng bộ lọc số **IIR (Infinite Impulse Response)**. Quá trình thiết kế thường sử dụng phương pháp **Biến đổi song tuyến (Bilinear Transform)** để chuyển đổi từ miền liên tục $s$ sang miền rời rạc $z$:
+\begin{equation}
+    s = \frac{2}{T} \frac{1 - z^{-1}}{1 + z^{-1}}
+\end{equation}
+Trong đó $T$ là chu kỳ lấy mẫu.
+
+Sau khi biến đổi, hàm truyền đạt trong miền $z$ có dạng phân thức hữu tỷ:
+\begin{equation}
+    H(z) = \frac{B(z)}{A(z)} = \frac{b_0 + b_1 z^{-1} + \dots + b_N z^{-N}}{1 + a_1 z^{-1} + \dots + a_N z^{-N}}
+\end{equation}
+
+Từ đó, ta có phương trình sai phân (Difference Equation) dùng để lập trình bộ lọc:
+\begin{equation}
+    y[n] = \sum_{i=0}^{N} b_i x[n-i] - \sum_{j=1}^{N} a_j y[n-j]
+\end{equation}
+Trong đó:
+\begin{itemize}
+    \item $x[n], y[n]$: Tín hiệu đầu vào và đầu ra tại thời điểm $n$.
+    \item $b_i$: Các hệ số feedforward (tử số).
+    \item $a_j$: Các hệ số feedback (mẫu số), tạo nên đặc tính hồi quy của bộ lọc IIR.
+\end{itemize}
+
+\subsection{Huấn luyện mô hình nhận diện âm thanh}
+
+Mô hình phân loại âm thanh mà nhóm thực hiện được xây dựng dựa trên kiến trúc CNN (Convolutional Neural Network), xử lý log-mel spectrogram của âm thanh để trích xuất các đặc trưng thời gian - tần số cho mô hình học. Quá trình huấn luyện có kết hợp các kỹ thuật tăng cường dữ liệu (data augmentation), cơ chế regularization và chiến lược tối ưu hóa để đạt được độ chính xác cao và khả năng tổng quát hóa tốt trên dữ liệu thực tế.
+
+\subsubsection{Biểu diễn đặc trưng Log-Mel Spectrogram}
+
+Tín hiệu âm thanh dạng sóng được chuyển đổi qua miền thời gian - tần số nhờ biến đổi \textit{Short-Time Fourier Transform (STFT)}. STFT chia tín hiệu thành các khung thời gian ngắn chồng lấn (với độ dài cửa sổ \texttt{n\_fft} và bước nhảy \texttt{hop\_length}), sau đó áp dụng biến đổi Fourier trên từng khung. Kết quả là một spectrogram biểu diễn năng lượng của tín hiệu trong miền thời gian - tần số.
+
+Để mô phỏng cảm nhận của tai người, spectrogram được ánh xạ sang thang Mel thông qua \textit{Mel filter bank}. Thang Mel là một thang tần số phi tuyến, phản ánh đặc tính nhận thức âm thanh của con người với độ phân giải cao ở vùng tần số thấp và độ phân giải thấp hơn ở vùng tần số cao:
+\begin{equation}
+    m = 2595 \log_{10}\left(1 + \frac{f}{700}\right)
+\end{equation}
+Trong đó $m$ là tần số Mel và $f$ là tần số Hertz.
+
+Sau khi áp dụng Mel filter bank với \texttt{n\_mels} bộ lọc (thường là 64), ta thu được Mel spectrogram. Để nén dải động và tăng khả năng phân biệt các thành phần âm thanh nhỏ, biến đổi logarit được áp dụng theo đơn vị decibel (dB):
+\begin{equation}
+    S_{\text{dB}} = 10 \log_{10}\left(\frac{S}{S_{\text{ref}}}\right)
+\end{equation}
+Trong đó $S$ là năng lượng Mel spectrogram và $S_{\text{ref}}$ là giá trị tham chiếu (thường là giá trị lớn nhất).
+
+Đầu vào cuối cùng của mô hình là log-mel spectrogram với kích thước cố định $(128 \times 64 \times 1)$, tương ứng với 128 bước thời gian, 64 kênh Mel và 1 kênh màu (grayscale). Cấu trúc này phù hợp để áp dụng các lớp tích chập 2D (Conv2D) nhằm học các mẫu tần số và biến thiên theo thời gian.
+
+\subsubsection{Chuẩn hóa dữ liệu (Data Normalization)}
+
+Sau khi tính toán log-mel spectrogram, dữ liệu được chuẩn hóa để đưa tất cả mẫu vào cùng một không gian giá trị. Chuẩn hóa là bước quan trọng vì:
+\begin{itemize}
+    \item Âm thanh thu từ các nguồn khác nhau có biên độ khác nhau (do mục tiêu ghi âm, vị trí microphone, ...).
+    \item CNN hoạt động tốt hơn khi đầu vào nằm trong một khoảng giá trị nhất quán, thường là $[0, 1]$ hoặc $[-1, 1]$.
+\end{itemize}
+
+Chuẩn hóa min-max được áp dụng trên từng mẫu:
+\begin{equation}
+    S_{\text{norm}} = \frac{S_{\text{dB}} - S_{\min}}{S_{\max} - S_{\min} + \epsilon}
+\end{equation}
+Trong đó $S_{\min}$ và $S_{\max}$ là giá trị nhỏ nhất và lớn nhất của log-mel spectrogram, $\epsilon$ là một hằng số nhỏ để tránh chia cho 0. Kết quả là spectrogram chuẩn hóa nằm trong khoảng $[0, 1]$, sẵn sàng để đầu vào cho CNN.
+
+\subsubsection{Data Augmentation để tăng khả năng tổng quát hóa}
+
+Để giảm hiện tượng overfitting và tăng độ bền vững (robustness) của mô hình với các điều kiện môi trường thực tế, dữ liệu huấn luyện được tăng cường thông qua nhiều kỹ thuật biến đổi. Mục tiêu là tạo ra các biến thể hợp lệ của cùng một nhãn, giúp mô hình học được các đặc trưng ổn định. Điều này đặc biệt quan trọng với bài toán nhận diện âm thanh môi trường, vì cùng một loại âm thanh có thể được ghi âm ở các tốc độ, âm lượng, cao độ khác nhau tùy theo ngữ cảnh.
+
+\textbf{Biến đổi trên waveform:}
+\begin{itemize}
+    \item Time Shift: Dịch chuyển tín hiệu theo trục thời gian một khoảng ngẫu nhiên, mô phỏng sự chênh lệch thời điểm bắt đầu của âm thanh.
+    \item Gain: Thay đổi biên độ (âm lượng) của tín hiệu.
+    \item Pitch Shift: Thay đổi cao độ (pitch) mà không làm thay đổi tốc độ âm thanh, giúp mô hình nhận diện các âm thanh tương tự ở các tần số khác nhau.
+    \item Time Stretch: Thay đổi tốc độ phát mà không làm thay đổi cao độ, mô phỏng sự khác biệt về nhịp độ.
+\end{itemize}
+
+\textbf{Trộn nhiễu môi trường:} Thêm nhiễu nền (background noise) vào tín hiệu gốc với Signal-to-Noise Ratio (SNR) được kiểm soát. Kỹ thuật này giúp mô hình học cách phân biệt tín hiệu mục tiêu khỏi nhiễu môi trường, cải thiện khả năng hoạt động trong điều kiện thực tế.
+
+\textbf{SpecAugment trên spectrogram:} SpecAugment là kỹ thuật augmentation trực tiếp trên biểu diễn log-mel spectrogram, bao gồm hai loại masking:
+\begin{itemize}
+    \item Frequency Masking: Che (mask) các kênh tần số liên tiếp bằng cách đặt giá trị của chúng về 0, mô phỏng sự mất mát thông tin tần số. Số lượng kênh bị che tối đa là \texttt{freq\_mask\_max}.
+    
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{graphics/f_mask}
+    \caption{Minh họa Frequency Masking: các kênh tần số liên tiếp bị che.}
+    \label{fig:freq_masking}
+    \end{figure}
+    
+    \item Time Masking: Che các bước thời gian liên tiếp, mô phỏng sự gián đoạn tạm thời trong tín hiệu. Số lượng bước thời gian bị che tối đa là \texttt{time\_mask\_max}.
+    
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{graphics/t_mask}
+    \caption{Minh họa Time Masking: các bước thời gian liên tiếp bị che.}
+    \label{fig:time_masking}
+    \end{figure}
+\end{itemize}
+
+SpecAugment được áp dụng với xác suất $p$ (thường là 0.9) trong quá trình huấn luyện, giúp mô hình học được các đặc trưng bất biến với các biến đổi cục bộ trong miền thời gian và tần số. Kỹ thuật này tương tự như "che mắt" một phần của spectrogram, buộc mô hình phải học từ thông tin còn lại để nhận diện âm thanh. Điều này mô phỏng tình huống thực tế khi có nhiễu hoặc tín hiệu bị cắt đứt một phần.
+
+\subsubsection{Kiến trúc CNN cho phân loại âm thanh}
+
+Vì log-mel spectrogram có cấu trúc tương tự ảnh hai chiều, mô hình sử dụng các lớp tích chập 2D (\texttt{Conv2D}) để trích xuất đặc trưng không gian. Sự lựa chọn này là phù hợp vì spectrogram chứa các mẫu tần số (patterns) như ranh giới giữa vùng tần số cao/thấp, và CNN đã được chứng minh hiệu quả trong việc nhận diện các mẫu 2D từ ảnh và spectrogram. Kiến trúc mạng được thiết kế theo khối (block), với mỗi khối gồm:
+\begin{itemize}
+    \item Hai lớp Conv2D: Sử dụng kernel kích thước $(3 \times 3)$ và padding \texttt{same} để giữ nguyên kích thước không gian. Số lượng bộ lọc tăng dần qua các khối (32 $\to$ 64 $\to$ 128 $\to$ 256) để học các đặc trưng từ thô đến tinh vi.
+    \item Batch Normalization: Chuẩn hóa đầu ra của mỗi lớp tích chập, giúp ổn định quá trình huấn luyện và tăng tốc độ hội tụ.
+    \item MaxPooling2D: Giảm kích thước không gian với kernel $(2 \times 2)$, giúp giảm số tham số.
+    \item Dropout: Tắt ngẫu nhiên một tỉ lệ neuron để giảm overfitting.
+\end{itemize}
+
+Sau các khối tích chập, mô hình sử dụng \textbf{Global Average Pooling (GAP)} thay cho fully connected layer. GAP tính trung bình của mỗi feature map trên toàn bộ không gian, giảm mạnh số tham số và giảm nguy cơ overfitting. Cuối cùng, một lớp \texttt{Dense} với hàm kích hoạt \texttt{softmax} tạo ra phân phối xác suất trên $N$ lớp:
+\begin{equation}
+    \text{softmax}(z_i) = \frac{e^{z_i}}{\sum_{j=1}^{N} e^{z_j}}
+\end{equation}
+
+\subsubsection{Hàm mất mát Cross-Entropy và Label Smoothing}
+
+Bài toán phân loại đa lớp sử dụng hàm mất mát \textit{Categorical Cross-Entropy} để đo sai lệch giữa phân phối xác suất dự đoán $\hat{y}$ và phân phối nhãn thật $y$:
+\begin{equation}
+    \mathcal{L}_{\text{CE}} = -\sum_{i=1}^{N} y_i \log(\hat{y}_i)
+\end{equation}
+Trong đó $y_i$ là nhãn one-hot (1 cho lớp đúng, 0 cho các lớp khác) và $\hat{y}_i$ là xác suất dự đoán của lớp $i$.
+
+Để giảm hiện tượng mô hình quá tự tin (overconfident) và cải thiện khả năng tổng quát hóa, \textit{Label Smoothing} được áp dụng. Thay vì sử dụng nhãn one-hot cứng, label smoothing làm mềm nhãn bằng cách phân phối một lượng nhỏ xác suất cho các lớp khác:
+\begin{equation}
+    y'_i = 
+    \begin{cases}
+        1 - \epsilon + \frac{\epsilon}{N} & \text{nếu } i = \text{lớp đúng} \\
+        \frac{\epsilon}{N} & \text{ngược lại}
+    \end{cases}
+\end{equation}
+Trong đó $\epsilon$ là tham số smoothing (thường là 0.05), $N$ là số lớp. Label smoothing giúp mô hình ít bị phụ thuộc vào các mẫu nhiễu và cải thiện hiệu suất trên dữ liệu validation/test.
+
+\subsubsection{Tối ưu hóa và chiến lược học}
+
+Mô hình được tối ưu hóa bằng thuật toán \textbf{Adam (Adaptive Moment Estimation)}, một biến thể của Stochastic Gradient Descent kết hợp momentum và adaptive learning rate. Adam điều chỉnh learning rate riêng cho từng tham số dựa trên ước lượng moment bậc nhất và bậc hai của gradient:
+\begin{align}
+    m_t &= \beta_1 m_{t-1} + (1 - \beta_1) g_t \\
+    v_t &= \beta_2 v_{t-1} + (1 - \beta_2) g_t^2 \\
+    \theta_t &= \theta_{t-1} - \frac{\alpha}{\sqrt{\hat{v}_t} + \epsilon} \hat{m}_t
+\end{align}
+Trong đó $g_t$ là gradient tại bước $t$, $m_t$ và $v_t$ là moment bậc nhất và bậc hai, $\alpha$ là learning rate ban đầu (thường là $10^{-3}$), $\beta_1$ và $\beta_2$ là hệ số decay (thường là 0.9 và 0.999).
+
+Để tránh việc kẹt ở các plateau (vùng phẳng trong không gian loss), \textbf{ReduceLROnPlateau} được sử dụng để giảm learning rate khi validation loss không cải thiện sau một số epoch nhất định (patience). Learning rate được giảm theo hệ số (factor) và có ngưỡng tối thiểu (min\_lr) để tránh learning rate quá nhỏ.
+
+\textbf{Early Stopping} dừng quá trình huấn luyện khi validation loss không cải thiện sau một số epoch (patience lớn hơn, ví dụ 12), đồng thời khôi phục trọng số tốt nhất (restore\_best\_weights) để tránh overfitting.
+
+\textbf{Model Checkpoint} lưu mô hình tốt nhất dựa trên validation loss, đảm bảo không mất mô hình có hiệu suất cao nhất trong quá trình huấn luyện.
+
+\subsubsection{Mất cân bằng lớp và Class Weight}
+
+Trong thực tế, tập dữ liệu thường có sự mất cân bằng giữa các lớp (class imbalance), với một số lớp có ít mẫu hơn hoặc khó học hơn. Để giải quyết vấn đề này, \textit{class weight} được áp dụng để tăng trọng số loss của các lớp yếu/ít mẫu.
+
+Class weight được tính dựa trên tần suất xuất hiện ngược (inverse frequency):
+\begin{equation}
+    w_i = \frac{\bar{n}}{n_i + \epsilon}
+\end{equation}
+Trong đó $w_i$ là trọng số của lớp $i$, $n_i$ là số mẫu của lớp $i$, $\bar{n}$ là số mẫu trung bình và $\epsilon$ là hằng số nhỏ để tránh chia cho 0.
+
+Đối với các lớp đặc biệt khó (ví dụ ``engine'', ``rooster'', ``dog''), một hệ số boost bổ sung có thể được áp dụng để tăng thêm trọng số:
+\begin{equation}
+    w'_i = w_i \times \text{boost}_i
+\end{equation}
+
+Loss có trọng số được tính như sau:
+\begin{equation}
+    \mathcal{L}_{\text{weighted}} = \sum_{i=1}^{N} w_i \cdot \mathcal{L}_i
+\end{equation}
+
+Kỹ thuật này giúp mô hình chú ý nhiều hơn vào các lớp khó và cải thiện khả năng nhận diện đồng đều trên tất cả các lớp.
+
+\subsubsection{Chiến lược huấn luyện và đánh giá}
+
+Dữ liệu được chia thành ba tập: \textit{train}, \textit{validation} và \textit{test} theo tỉ lệ 8:1:1. Tập train được sử dụng để cập nhật trọng số, tập validation để điều chỉnh hyperparameter và early stopping, và tập test để đánh giá hiệu suất cuối cùng trên dữ liệu chưa thấy.
+
+Ngoài tập test sạch, một tập \textit{test\_noisy} chứa dữ liệu có nhiễu môi trường được sử dụng để đánh giá độ bền vững của mô hình trong điều kiện thực tế.
+
+Các metric đánh giá bao gồm:
+\begin{itemize}
+    \item Accuracy: Tỉ lệ dự đoán đúng trên tổng số mẫu.
+    \item Precision: Tỉ lệ dự đoán đúng trong số các mẫu được dự đoán là dương tính cho mỗi lớp.
+    \item Recall: Tỉ lệ mẫu dương tính thực sự được dự đoán đúng.
+    \item F1-score: Trung bình điều hòa của Precision và Recall, cân bằng giữa hai metric này:
+    \begin{equation}
+        F1 = 2 \cdot \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+    \end{equation}
+    \item Confusion Matrix: Ma trận thể hiện số lượng dự đoán đúng/sai giữa các lớp, giúp phân tích các loại lỗi cụ thể.
+\end{itemize}
+
+Macro F1-score (trung bình F1-score của tất cả các lớp) thường được sử dụng làm metric chính để đánh giá hiệu suất tổng thể, đặc biệt khi dữ liệu có mất cân bằng lớp.
+
+\subsubsection{Ngưỡng tin cậy cho lớp Unknown}
+
+Đối với hệ thống thực tế, việc phát hiện các âm thanh ngoài tập huấn luyện (out-of-distribution) là rất quan trọng. Để giải quyết vấn đề này, một lớp đặc biệt ``unknown'' được thêm vào tập dữ liệu, chứa các âm thanh không thuộc các lớp mục tiêu.
+
+Trong quá trình suy luận, một ngưỡng tin cậy (confidence threshold) $\tau$ được áp dụng: nếu xác suất dự đoán cao nhất nhỏ hơn $\tau$, mẫu được gán nhãn ``unknown''. Giá trị $\tau$ tối ưu được xác định bằng cách tìm kiếm trên tập noisy để tối đa hóa macro F1-score:
+\begin{equation}
+    \tau^* = \arg\max_{\tau} \text{F1}_{\text{macro}}(\tau)
+\end{equation}
+
+Kỹ thuật này giúp hệ thống tránh đưa ra dự đoán sai với độ tin cậy cao cho các âm thanh không mong đợi, tăng độ tin cậy và an toàn trong ứng dụng thực tế.
