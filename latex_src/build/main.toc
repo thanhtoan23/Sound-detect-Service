@@ -5,14 +5,14 @@
 \contentsline {subsubsection}{\numberline {2.1.1}Lý thuyết Bộ lọc Thông dải (Bandpass Filter)}{4}{subsubsection.2.1.1}%
 \contentsline {subsubsection}{\numberline {2.1.2}Xấp xỉ Butterworth}{5}{subsubsection.2.1.2}%
 \contentsline {subsubsection}{\numberline {2.1.3}Hiện thực hóa trong miền số (Digital Implementation)}{6}{subsubsection.2.1.3}%
-\contentsline {subsection}{\numberline {2.2}Huấn luyện mô hình nhận diện âm thanh}{6}{subsection.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}Biểu diễn đặc trưng Log-Mel Spectrogram}{6}{subsubsection.2.2.1}%
-\contentsline {subsubsection}{\numberline {2.2.2}Chuẩn hóa dữ liệu (Data Normalization)}{7}{subsubsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2}Huấn luyện mô hình nhận diện âm thanh}{7}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Biểu diễn đặc trưng Log-Mel Spectrogram}{7}{subsubsection.2.2.1}%
+\contentsline {subsubsection}{\numberline {2.2.2}Chuẩn hóa dữ liệu (Data Normalization)}{8}{subsubsection.2.2.2}%
 \contentsline {subsubsection}{\numberline {2.2.3}Data Augmentation để tăng khả năng tổng quát hóa}{8}{subsubsection.2.2.3}%
 \contentsline {subsubsection}{\numberline {2.2.4}Kiến trúc CNN cho phân loại âm thanh}{10}{subsubsection.2.2.4}%
 \contentsline {subsubsection}{\numberline {2.2.5}Hàm mất mát Cross-Entropy và Label Smoothing}{10}{subsubsection.2.2.5}%
 \contentsline {subsubsection}{\numberline {2.2.6}Tối ưu hóa và chiến lược học}{11}{subsubsection.2.2.6}%
-\contentsline {subsubsection}{\numberline {2.2.7}Mất cân bằng lớp và Class Weight}{11}{subsubsection.2.2.7}%
+\contentsline {subsubsection}{\numberline {2.2.7}Mất cân bằng lớp và Class Weight}{12}{subsubsection.2.2.7}%
 \contentsline {subsubsection}{\numberline {2.2.8}Chiến lược huấn luyện và đánh giá}{12}{subsubsection.2.2.8}%
 \contentsline {subsubsection}{\numberline {2.2.9}Ngưỡng tin cậy cho lớp Unknown}{13}{subsubsection.2.2.9}%
 \contentsline {section}{\numberline {3}System Architecture}{14}{section.3}%

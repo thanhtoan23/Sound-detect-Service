@@ -15,6 +15,7 @@ Các tham số kỹ thuật quan trọng bao gồm:
     \begin{equation}
         f_0 = \sqrt{f_L \cdot f_H}
     \end{equation}
+    \item  $\omega_0 = 2\pi f_0$ là tần số góc trung tâm.
     \item Băng thông ($BW$ - Bandwidth): Độ rộng của dải tần số tại điểm suy giảm -3dB:
     \begin{equation}
         BW = f_H - f_L
@@ -25,11 +26,13 @@ Các tham số kỹ thuật quan trọng bao gồm:
     \end{equation}
 \end{itemize}
 
-Hàm truyền đạt (Transfer Function) tổng quát của một bộ lọc thông dải bậc hai trong miền Laplace ($s$) có dạng:
-\begin{equation}
-    H_{BP}(s) = \frac{K \left(\frac{\omega_0}{Q}\right) s}{s^2 + \left(\frac{\omega_0}{Q}\right) s + \omega_0^2}
-\end{equation}
-Trong đó $\omega_0 = 2\pi f_0$ là tần số góc trung tâm.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{graphics/bandpass.png}
+    \caption{Đáp ứng tần số của bộ lọc thông dải (Bandpass)}
+    \label{fig:bandpass_theory}
+\end{figure}
+
 
 \subsubsection{Xấp xỉ Butterworth}
 

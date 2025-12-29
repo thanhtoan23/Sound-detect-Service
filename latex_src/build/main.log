@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.5.7)  29 DEC 2025 11:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2025) (preloaded format=pdflatex 2025.5.7)  29 DEC 2025 11:38
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1132,64 +1132,69 @@ File: graphics/hcmut.png Graphic file (type png)
 Package pdftex.def Info: graphics/hcmut.png  used on input line 17.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [4{c:/texlive/2025/texmf-dist/fonts/enc/dvips/base/8r.enc}]
+<graphics/bandpass.png, id=366, 781.41937pt x 440.39531pt>
+File: graphics/bandpass.png Graphic file (type png)
+<use graphics/bandpass.png>
+Package pdftex.def Info: graphics/bandpass.png  used on input line 31.
+(pdftex.def)             Requested size: 409.71692pt x 230.9086pt.
+
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 52.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 44.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
-[5]
+[5 <./graphics/bandpass.png>]
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 81.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 79.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [6]
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 108.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 102.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [7]
-<graphics/f_mask.png, id=396, 845.1575pt x 618.31pt>
-File: graphics/f_mask.png Graphic file (type png)
-<use graphics/f_mask.png>
-Package pdftex.def Info: graphics/f_mask.png  used on input line 129.
-(pdftex.def)             Requested size: 273.14923pt x 199.83508pt.
-
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 133.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 128.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [8]
-<graphics/t_mask.png, id=401, 830.10126pt x 451.6875pt>
+<graphics/f_mask.png, id=402, 845.1575pt x 618.31pt>
+File: graphics/f_mask.png Graphic file (type png)
+<use graphics/f_mask.png>
+Package pdftex.def Info: graphics/f_mask.png  used on input line 132.
+(pdftex.def)             Requested size: 273.14923pt x 199.83508pt.
+<graphics/t_mask.png, id=403, 830.10126pt x 451.6875pt>
 File: graphics/t_mask.png Graphic file (type png)
 <use graphics/t_mask.png>
-Package pdftex.def Info: graphics/t_mask.png  used on input line 138.
+Package pdftex.def Info: graphics/t_mask.png  used on input line 141.
 (pdftex.def)             Requested size: 273.14923pt x 148.63pt.
 
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 150.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 148.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [9 <./graphics/f_mask.png (PNG copy)> <./graphics/t_mask.png (PNG copy)>]
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 176.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 172.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [10]
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 202.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 201.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [11]
 
 File: graphics/hcmut.png Graphic file (type png)
 <use graphics/hcmut.png>
-Package pdftex.def Info: graphics/hcmut.png  used on input line 236.
+Package pdftex.def Info: graphics/hcmut.png  used on input line 234.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [12]) (./contents/sect2.tex
 
@@ -1282,7 +1287,7 @@ File: graphics/hcmut.png Graphic file (type png)
 Package pdftex.def Info: graphics/hcmut.png  used on input line 10.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [23]
-<graphics/img/bandpass_amppng.png, id=554, 744.381pt x 400.3758pt>
+<graphics/img/bandpass_amppng.png, id=556, 744.381pt x 400.3758pt>
 File: graphics/img/bandpass_amppng.png Graphic file (type png)
 <use graphics/img/bandpass_amppng.png>
 Package pdftex.def Info: graphics/img/bandpass_amppng.png  used on input line 44.
@@ -1294,7 +1299,7 @@ File: graphics/hcmut.png Graphic file (type png)
 Package pdftex.def Info: graphics/hcmut.png  used on input line 48.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [24]
-<graphics/img/bandpass_phase.png, id=559, 714.7503pt x 354.123pt>
+<graphics/img/bandpass_phase.png, id=561, 714.7503pt x 354.123pt>
 File: graphics/img/bandpass_phase.png Graphic file (type png)
 <use graphics/img/bandpass_phase.png>
 Package pdftex.def Info: graphics/img/bandpass_phase.png  used on input line 51.
@@ -1306,7 +1311,7 @@ File: graphics/hcmut.png Graphic file (type png)
 Package pdftex.def Info: graphics/hcmut.png  used on input line 60.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [25 <./graphics/img/bandpass_amppng.png> <./graphics/img/bandpass_phase.png>]
-<graphics/img/spectral.png, id=569, 859.2903pt x 1003.8303pt>
+<graphics/img/spectral.png, id=571, 859.2903pt x 1003.8303pt>
 File: graphics/img/spectral.png Graphic file (type png)
 <use graphics/img/spectral.png>
 Package pdftex.def Info: graphics/img/spectral.png  used on input line 82.
@@ -1324,7 +1329,7 @@ File: graphics/hcmut.png Graphic file (type png)
 Package pdftex.def Info: graphics/hcmut.png  used on input line 98.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [27 <./graphics/img/spectral.png>]
-<graphics/img/agc01.png, id=580, 1004.553pt x 573.1011pt>
+<graphics/img/agc01.png, id=582, 1004.553pt x 573.1011pt>
 File: graphics/img/agc01.png Graphic file (type png)
 <use graphics/img/agc01.png>
 Package pdftex.def Info: graphics/img/agc01.png  used on input line 115.
@@ -1372,7 +1377,7 @@ File: graphics/hcmut.png Graphic file (type png)
 Package pdftex.def Info: graphics/hcmut.png  used on input line 218.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [34]) (./contents/sect3d.tex
-<graphics/img/test_processor_before.png, id=620, 797.8608pt x 426.393pt>
+<graphics/img/test_processor_before.png, id=622, 797.8608pt x 426.393pt>
 File: graphics/img/test_processor_before.png Graphic file (type png)
 <use graphics/img/test_processor_before.png>
 Package pdftex.def Info: graphics/img/test_processor_before.png  used on input line 10.
@@ -1382,7 +1387,7 @@ Overfull \hbox (6.79999pt too wide) in paragraph at lines 10--11
  [][] 
  []
 
-<graphics/img/test_processor_after.png, id=621, 797.8608pt x 426.393pt>
+<graphics/img/test_processor_after.png, id=623, 797.8608pt x 426.393pt>
 File: graphics/img/test_processor_after.png Graphic file (type png)
 <use graphics/img/test_processor_after.png>
 Package pdftex.def Info: graphics/img/test_processor_after.png  used on input line 19.
@@ -1400,12 +1405,12 @@ File: graphics/hcmut.png Graphic file (type png)
 Package pdftex.def Info: graphics/hcmut.png  used on input line 59.
 (pdftex.def)             Requested size: 20.0pt x 20.19826pt.
 [36]
-<graphics/fig/ui_runtime_dog.png, id=646, 1414.53468pt x 721.19438pt>
+<graphics/fig/ui_runtime_dog.png, id=648, 1414.53468pt x 721.19438pt>
 File: graphics/fig/ui_runtime_dog.png Graphic file (type png)
 <use graphics/fig/ui_runtime_dog.png>
 Package pdftex.def Info: graphics/fig/ui_runtime_dog.png  used on input line 68.
 (pdftex.def)             Requested size: 446.13727pt x 227.45255pt.
-<graphics/fig/ui_runtime_switch_laughing_dog.png, id=647, 1086.30844pt x 179.92218pt>
+<graphics/fig/ui_runtime_switch_laughing_dog.png, id=649, 1086.30844pt x 179.92218pt>
 File: graphics/fig/ui_runtime_switch_laughing_dog.png Graphic file (type png)
 <use graphics/fig/ui_runtime_switch_laughing_dog.png>
 Package pdftex.def Info: graphics/fig/ui_runtime_switch_laughing_dog.png  used on input line 75.
@@ -1437,18 +1442,18 @@ Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 1AF57B3B31026F17C91C0075C5394472;14316.
  ) 
 Here is how much of TeX's memory you used:
- 43645 strings out of 469608
- 975082 string characters out of 5474780
- 1710452 words of memory out of 5000000
- 69530 multiletter control sequences out of 15000+600000
- 707866 words of font info for 162 fonts, out of 8000000 for 9000
+ 43650 strings out of 469608
+ 975287 string characters out of 5474780
+ 1710605 words of memory out of 5000000
+ 69538 multiletter control sequences out of 15000+600000
+ 706158 words of font info for 159 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  140i,25n,135p,820b,2188s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/public/rsfs/rsfs10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/urw/symbol/usyr.pfb><c:/texlive/2025/texmf-dist/fonts/type1/urw/symbol/usyr.pfb><c:/texlive/2025/texmf-dist/fonts/type1/urw/times/utmb8a.pfb><c:/texlive/2025/texmf-dist/fonts/type1/vntex/urwvn/utmb8v.pfb><c:/texlive/2025/texmf-dist/fonts/type1/vntex/urwvn/utmbi8v.pfb><c:/texlive/2025/texmf-dist/fonts/type1/urw/times/utmr8a.pfb><c:/texlive/2025/texmf-dist/fonts/type1/vntex/urwvn/utmr8v.pfb><c:/texlive/2025/texmf-dist/fonts/type1/urw/times/utmri8a.pfb><c:/texlive/2025/texmf-dist/fonts/type1/vntex/urwvn/utmri8v.pfb><c:/texlive/2025/texmf-dist/fonts/type1/vntex/vnr/vntt10.pfb><c:/texlive/2025/texmf-dist/fonts/type1/vntex/vnr/vntt12.pfb>
-Output written on build/main.pdf (39 pages, 1241357 bytes).
+Output written on build/main.pdf (39 pages, 1302105 bytes).
 PDF statistics:
- 785 PDF objects out of 1000 (max. 8388607)
+ 787 PDF objects out of 1000 (max. 8388607)
  683 compressed objects within 7 object streams
  214 named destinations out of 1000 (max. 500000)
- 596 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 601 words of extra memory for PDF output out of 10000 (max. 10000000)
 
