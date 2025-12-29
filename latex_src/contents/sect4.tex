@@ -6,7 +6,7 @@
 
 Pipeline xử lý tín hiệu kết hợp các kỹ thuật DSP truyền thống nhằm làm sạch và chuẩn hóa tín hiệu đầu vào, trong khi mô hình CNN được huấn luyện trên đặc trưng log-mel spectrogram để học các đặc trưng âm thanh có ý nghĩa. Thông qua việc áp dụng các kỹ thuật regularization và data augmentation, mô hình đạt độ chính xác tốt trên tập kiểm tra và duy trì hiệu suất ổn định khi làm việc với dữ liệu có nhiễu.
 
-Hệ thống cuối cùng có khả năng nhận diện 11 lớp âm thanh môi trường và đáp ứng yêu cầu vận hành trong thời gian thực.
+Hệ thống cuối cùng có khả năng nhận diện 14 lớp âm thanh môi trường và đáp ứng yêu cầu vận hành trong thời gian thực.
 
 \subsection{Đánh giá hiệu suất và ưu điểm}
 
@@ -16,7 +16,6 @@ Hệ thống thể hiện một số ưu điểm nổi bật:
     \item Độ trễ thấp và khả năng hoạt động thời gian thực: Việc xử lý theo từng khung âm thanh cố định giúp hệ thống phản hồi nhanh, phù hợp cho các ứng dụng tương tác.
     \item Thiết kế mô-đun: Các thành phần của hệ thống được tách biệt rõ ràng, giúp việc bảo trì, mở rộng hoặc thay thế từng module trở nên thuận tiện.
     \item Cách tiếp cận hybrid hiệu quả: Sự kết hợp giữa DSP và học sâu giúp giảm nhiễu đầu vào, cải thiện tính ổn định của đặc trưng và nâng cao khả năng tổng quát hóa của mô hình.
-    \item Khả năng thích ứng thực tế: Giao diện cho phép người dùng điều chỉnh các tham số xử lý và ngưỡng tin cậy, hỗ trợ hệ thống hoạt động trong nhiều điều kiện môi trường khác nhau.
 \end{itemize}
 
 \subsection{Những hạn chế}

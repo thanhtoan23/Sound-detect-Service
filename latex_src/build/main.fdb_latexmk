@@ -1,8 +1,8 @@
 # Fdb version 4
-["pdflatex"] 1766981885.30089 "c:/Users/DELL/Documents/_PROJECTS/GitHub/Sound-detect-Service/latex_src/main.tex" "build/main.pdf" "main" 1766981890.57072 0
-  "build/main.aux" 1766981890 16841 e836a44289675c9f62db05ba68986dc2 "pdflatex"
-  "build/main.out" 1766981890 14316 1af57b3b31026f17c91c0075c5394472 "pdflatex"
-  "build/main.toc" 1766981890 7007 b915332fd119312c630ae0763c40a9a8 "pdflatex"
+["pdflatex"] 1766982387.27522 "c:/Users/DELL/Documents/_PROJECTS/GitHub/Sound-detect-Service/latex_src/main.tex" "build/main.pdf" "main" 1766982392.18546 0
+  "build/main.aux" 1766982391 16841 e836a44289675c9f62db05ba68986dc2 "pdflatex"
+  "build/main.out" 1766982391 14316 1af57b3b31026f17c91c0075c5394472 "pdflatex"
+  "build/main.toc" 1766982391 7007 b915332fd119312c630ae0763c40a9a8 "pdflatex"
   "c:/Users/DELL/Documents/_PROJECTS/GitHub/Sound-detect-Service/latex_src/main.tex" 1766976019 2608 dc08c88a6108a0781608482ab6ce10a6 ""
   "c:/texlive/2025/texmf-dist/fonts/enc/dvips/base/8r.enc" 1746626667 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "c:/texlive/2025/texmf-dist/fonts/enc/dvips/vntex/t5.enc" 1746633510 7824 21ade6c3c7fd67cb4ace8dbc91c53118 ""
@@ -290,12 +290,12 @@
   "c:/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1746634113 3567524 04b3528a3aafe4f380239b48ee048e89 ""
   "c:/texlive/2025/texmf.cnf" 1746633842 713 614551405fc44b98efbf516466e3c909 ""
   "contents/sect1.tex" 1766975642 1395 f6252c2e92cebf288a58528896dd3cd0 ""
-  "contents/sect1a.tex" 1766981088 20521 372f8d2baba85e11994234f72c3bdf4c ""
-  "contents/sect2.tex" 1766981784 25832 6b967fb4b34b7c875cda95fb35fdec68 ""
+  "contents/sect1a.tex" 1766982345 20521 372f8d2baba85e11994234f72c3bdf4c ""
+  "contents/sect2.tex" 1766982386 25832 b7d93c25785ee125b2d6cd66403025bb ""
   "contents/sect3a.tex" 1766970470 8486 fa275491eed6a39bebc1c9d362749fcf ""
   "contents/sect3c.tex" 1766981827 16560 fe876ca9fdcc9df0ea6ef3f98014194b ""
   "contents/sect3d.tex" 1766981884 5547 0d9b2b64e582f98915382ca87c0e1986 ""
-  "contents/sect4.tex" 1766975988 4762 e7774c3141f7b610647c90e04aa9b8fd ""
+  "contents/sect4.tex" 1766982124 4516 9538b6a7e2186dbb942538cacb6d829c ""
   "graphics/f_mask.png" 1766973412 113747 5b25b9fc1bf0203afaa783ac27a7372d ""
   "graphics/fig/ui_runtime_dog.png" 1766947898 147905 54c29956db729c98c27301cee7e98bd6 ""
   "graphics/fig/ui_runtime_switch_laughing_dog.png" 1766947942 38748 c3991e1896af01f828bef6fe7b5e9cd7 ""
