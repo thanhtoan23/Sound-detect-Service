@@ -99,14 +99,14 @@ Hình~\ref{fig:dsp_pipeline} minh họa thứ tự xử lý của pipeline DSP.
 %--------------------------------------------------------
 \subsection{Module AI Classifier: AudioClassifier}
 \subsubsection{Mô tả chức năng}
-\texttt{AudioClassifier} thực hiện phân loại âm thanh môi trường theo hướng \textit{AI-only}. Về mặt luồng xử lý, module nhận \textit{clean audio} từ DSP và tạo ra kết quả dự đoán dạng \textit{label} và \textit{confidence}. Để mô hình hoạt động ổn định trong thời gian thực, hệ thống sử dụng các cơ chế theo thời gian (temporal logic) thay vì suy luận độc lập trên từng chunk nhỏ.
+\texttt{AudioClassifier} thực hiện phân loại âm thanh môi trường sử dụng các kỹ thuật học máy. Về mặt luồng xử lý, module nhận \textit{clean audio} từ DSP và tạo ra kết quả dự đoán dạng \textit{label} và \textit{confidence}. Để mô hình hoạt động ổn định trong thời gian thực, hệ thống sử dụng các cơ chế theo thời gian (temporal logic) thay vì suy luận độc lập trên từng chunk nhỏ.
 
 Các nhiệm vụ chính của module gồm:
 \begin{itemize}
     \item \textbf{Feature Extraction}: chuyển tín hiệu audio đã qua DSP sang biểu diễn
     
     \textit{Log-Mel Spectrogram}.
-    \item \textbf{Buffering/Windowing}: tích lũy dữ liệu theo cửa sổ ngắn (ví dụ vài giây) để tạo input đủ ``già'' cho mô hình.
+    \item \textbf{Buffering/Windowing}: tích lũy dữ liệu theo cửa sổ ngắn (vài giây) để tạo input đủ ``già'' cho mô hình.
     \item \textbf{Inference}: chạy mô hình CNN để dự đoán phân phối xác suất theo lớp, sau đó lấy nhãn top-1 và độ tin cậy.
     \item \textbf{Temporal Post-processing}: làm mượt dự đoán theo thời gian và xử lý trường hợp im lặng nhằm giảm jitter của nhãn.
 \end{itemize}
@@ -123,12 +123,12 @@ Các nhiệm vụ chính của module gồm:
 %--------------------------------------------------------
 \subsection{Module Integration Pipeline: SmartAudioSystem}
 \subsubsection{Mô tả chức năng}
-\texttt{SmartAudioSystem} đóng vai trò \textit{orchestrator}, kết nối các module xử lý (DSP) và suy luận (AI) thành một pipeline end-to-end. Module này chuẩn hóa đầu ra dưới dạng một \textit{state} thống nhất (ví dụ: RMS, gain, label, confidence), từ đó GUI và CLI chỉ cần đọc state để hiển thị mà không phụ thuộc vào chi tiết nội bộ của từng khối.
+\texttt{SmartAudioSystem} đóng vai trò \textit{orchestrator}, kết nối các module xử lý (DSP) và suy luận (AI) thành một pipeline end-to-end. Module này chuẩn hóa đầu ra dưới dạng một \textit{state} thống nhất (RMS, gain, label, confidence), từ đó GUI và CLI chỉ cần đọc state để hiển thị mà không phụ thuộc vào chi tiết nội bộ của từng khối.
 
 \subsubsection{Quản lý luồng xử lý}
 Pipeline hoạt động theo vòng lặp liên tục:
 \begin{enumerate}
-    \item Thu audio theo chunk (ví dụ 1024 samples $\approx$ 64ms ở 16kHz).
+    \item Thu audio theo chunk (1024 samples $\approx$ 64ms ở 16kHz).
     \item Tiền xử lý DSP (Bandpass $\rightarrow$ Spectral Gate $\rightarrow$ AGC).
     \item Cập nhật buffer/window và suy luận AI theo cơ chế \textit{hop} (không nhất thiết suy luận mỗi chunk).
     \item Đóng gói kết quả thành state kèm metadata (RMS, gain, label/confidence).

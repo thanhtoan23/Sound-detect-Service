@@ -1,8 +1,8 @@
 # Fdb version 4
-["pdflatex"] 1766983126.79413 "c:/Users/DELL/Documents/_PROJECTS/GitHub/Sound-detect-Service/latex_src/main.tex" "build/main.pdf" "main" 1766983130.22298 0
-  "build/main.aux" 1766983129 17153 34649690b408128ea788d2423dfd95f7 "pdflatex"
-  "build/main.out" 1766983129 14316 1af57b3b31026f17c91c0075c5394472 "pdflatex"
-  "build/main.toc" 1766983129 7007 ebc0dc6433f898455dda7e1b3e73b697 "pdflatex"
+["pdflatex"] 1766989286.95568 "c:/Users/DELL/Documents/_PROJECTS/GitHub/Sound-detect-Service/latex_src/main.tex" "build/main.pdf" "main" 1766989290.84971 0
+  "build/main.aux" 1766989290 17153 34649690b408128ea788d2423dfd95f7 "pdflatex"
+  "build/main.out" 1766989290 14316 1af57b3b31026f17c91c0075c5394472 "pdflatex"
+  "build/main.toc" 1766989290 7007 ebc0dc6433f898455dda7e1b3e73b697 "pdflatex"
   "c:/Users/DELL/Documents/_PROJECTS/GitHub/Sound-detect-Service/latex_src/main.tex" 1766976019 2608 dc08c88a6108a0781608482ab6ce10a6 ""
   "c:/texlive/2025/texmf-dist/fonts/enc/dvips/base/8r.enc" 1746626667 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "c:/texlive/2025/texmf-dist/fonts/enc/dvips/vntex/t5.enc" 1746633510 7824 21ade6c3c7fd67cb4ace8dbc91c53118 ""
@@ -289,11 +289,11 @@
   "c:/texlive/2025/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1746633866 5569470 f263a82cf6bb394f5bc87b63f38b78df ""
   "c:/texlive/2025/texmf-var/web2c/pdftex/pdflatex.fmt" 1746634113 3567524 04b3528a3aafe4f380239b48ee048e89 ""
   "c:/texlive/2025/texmf.cnf" 1746633842 713 614551405fc44b98efbf516466e3c909 ""
-  "contents/sect1.tex" 1766975642 1395 f6252c2e92cebf288a58528896dd3cd0 ""
-  "contents/sect1a.tex" 1766983122 20462 ebbc6eb50888a45c2855fa7a38f05895 ""
-  "contents/sect2.tex" 1766982386 25832 b7d93c25785ee125b2d6cd66403025bb ""
+  "contents/sect1.tex" 1766988915 1390 a334836d3e73dc018c793822f19ccf8b ""
+  "contents/sect1a.tex" 1766988880 20290 14d3567118082e530a12d9c10a652ec6 ""
+  "contents/sect2.tex" 1766989286 25814 5d1fd0c48ee4a0950f382e4c6185b0cc ""
   "contents/sect3a.tex" 1766970470 8486 fa275491eed6a39bebc1c9d362749fcf ""
-  "contents/sect3c.tex" 1766981827 16560 fe876ca9fdcc9df0ea6ef3f98014194b ""
+  "contents/sect3c.tex" 1766989246 16474 6fd3bfa5324064192e8fc29c455e8f07 ""
   "contents/sect3d.tex" 1766981884 5547 0d9b2b64e582f98915382ca87c0e1986 ""
   "contents/sect4.tex" 1766982124 4516 9538b6a7e2186dbb942538cacb6d829c ""
   "graphics/bandpass.png" 1766982813 75147 8b43b8d2b3f81536da2fc97c9ec84496 ""

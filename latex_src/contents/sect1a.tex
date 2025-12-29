@@ -42,11 +42,8 @@ Các tham số kỹ thuật quan trọng bao gồm:
 \begin{itemize}
     \item Đáp ứng biên độ: Không có gợn sóng (ripple) trong dải thông và suy giảm đơn điệu (monotonic) trong dải chắn.
     \item Bình phương biên độ: Được xác định bởi công thức:
-    \begin{equation}
-        |H(j\omega)|^2 = \frac{1}{1 + \left(\frac{\omega}{\omega_c}\right)^{2n}}
-    \end{equation}
+        $$|H_{BP}(j\omega)|^2 = \frac{1}{1 + \left[ \mathbf{Q \left( \frac{\omega}{\omega_0} - \frac{\omega_0}{\omega} \right)} \right]^{2n}}$$
     \item Độ dốc (Roll-off): Tại vùng chuyển tiếp, độ dốc suy giảm là $-20n$ dB/decade. Butterworth giúp bảo toàn dạng sóng của tín hiệu tốt hơn trong miền thời gian.
-    \item Phân bố cực: Các cực (poles) của hàm truyền đạt $H(s)$ nằm đều nhau trên nửa mặt phẳng trái của vòng tròn đơn vị trong mặt phẳng phức $s$.
 \end{itemize}
 
 \subsubsection{Hiện thực hóa trong miền số (Digital Implementation)}

@@ -18,7 +18,7 @@ Các lớp còn lại trong ESC-50 được gom về lớp \textit{unknown} (gi�
             \item \textit{TRAIN\_RATIO/VAL\_RATIO/TEST\_RATIO}: tỉ lệ chia dữ liệu (train/val/test) theo kiểu \textbf{stratified} (mỗi lớp đều có mẫu ở cả 3 tập).
             \item \textit{RANDOM\_STATE}: cố định seed để tái lập thí nghiệm.
         \end{itemize}
-        \item \textbf{Output:} Tạo thư mục dataset con (ví dụ \textit{ESC50\_subset\_with\_unknown/}) và các file CSV split:
+        \item \textbf{Output:} Tạo thư mục dataset con (\textit{ESC50\_subset\_with\_unknown/}) và các file CSV split:
         \textit{...train.csv}, \textit{...val.csv}, \textit{...test.csv}.
         \item \textbf{Lưu ý kỹ thuật:} Chia stratified theo từng lớp giúp tránh tình trạng lớp hiếm bị ``mất'' ở val/test (đặc biệt khi mỗi lớp có ít mẫu).
     \end{itemize}
@@ -31,7 +31,7 @@ Các lớp còn lại trong ESC-50 được gom về lớp \textit{unknown} (gi�
             \item \textbf{Chỉ augment cho train} (tạo bộ \textit{train\_aug}).
             \item \textbf{Test-noisy} được tạo riêng chỉ bằng trộn noise (không augment hình học) để đánh giá worst-case hợp lý.
         \end{itemize}
-        \item \textbf{Các phép biến đổi (ví dụ cấu hình):}
+        \item \textbf{Các phép biến đổi:}
         \begin{itemize}
             \item \textit{augment\_speed}: time-stretch với \textit{rate} ngẫu nhiên trong $[0.9, 1.1]$.
             \item \textit{augment\_pitch}: pitch shift với \textit{n\_steps} ngẫu nhiên trong $[-2, 2]$ semitone.
@@ -41,8 +41,8 @@ Các lớp còn lại trong ESC-50 được gom về lớp \textit{unknown} (gi�
         \end{itemize}
         \item \textbf{Trộn noise theo SNR:}
         \begin{itemize}
-            \item \textit{TRAIN\_NOISE\_PROB}: xác suất trộn noise (ví dụ $0.7$).
-            \item \textit{TRAIN\_NOISE\_SNR\_RANGE\_DB}: khoảng SNR (ví dụ $(10, 30)$ dB).
+            \item \textit{TRAIN\_NOISE\_PROB}: xác suất trộn noise ($0.7$).
+            \item \textit{TRAIN\_NOISE\_SNR\_RANGE\_DB}: khoảng SNR ($(10, 30)$ dB).
             \item Với test-noisy: \textit{TEST\_NOISE\_PROB} thường đặt $1.0$ để đánh giá ``luôn có nhiễu''.
         \end{itemize}
         \item \textbf{Output:} Sinh ra thư mục train augmented và CSV tương ứng.
@@ -163,7 +163,7 @@ Trong triển khai realtime, hệ thống đọc dữ liệu từ microphone the
         \[
             \mathrm{RMS} = \sqrt{\mathbb{E}[x^2] + 10^{-9}}
         \]
-        \item Nếu \textit{rms < ENV\_MIN\_RMS} (ví dụ 0.005), hệ thống tránh đưa ra dự đoán mới để giảm false trigger trong vùng im lặng/nhiễu nhỏ.
+        \item Nếu \textit{rms < ENV\_MIN\_RMS} (0.005), hệ thống tránh đưa ra dự đoán mới để giảm false trigger trong vùng im lặng/nhiễu nhỏ.
     \end{itemize}
 
     \item \textbf{Tiền xử lý khi inference:}
@@ -188,14 +188,14 @@ Do dự đoán theo từng khung ngắn dễ bị rung (label flicker) và nhả
 \begin{enumerate}
     \item \textbf{Hop (giảm tần suất predict để ổn định):}
     \begin{itemize}
-        \item Tham số: \textit{ENV\_PRED\_HOP\_SEC} (ví dụ 0.5s).
+        \item Tham số: \textit{ENV\_PRED\_HOP\_SEC} (0.5s).
         \item Ý tưởng: chỉ gọi model mỗi \textit{0.5s}. Nếu chưa tới thời điểm hop, hệ thống giữ kết quả gần nhất (\textit{last\_label/last\_conf}) để UI/logic không bị thay đổi liên tục.
         \item Lợi ích: giảm nhạy với nhiễu tức thời, giảm tải tính toán khi chạy realtime.
     \end{itemize}
 
     \item \textbf{Temporal smoothing (trung bình xác suất theo cửa sổ):}
     \begin{itemize}
-        \item Tham số: \textit{ENV\_SMOOTH\_K} (ví dụ $K=3$, thường 3--7 là hợp lý).
+        \item Tham số: \textit{ENV\_SMOOTH\_K} ($K=3$, thường 3--7 là hợp lý).
         \item Cách làm: mỗi lần predict thu được vector xác suất \textit{probs}. Lưu các vector này trong hàng đợi độ dài $K$:
         \[
             \bar{\mathbf{p}} = \frac{1}{K}\sum_{i=1}^{K}\mathbf{p}_i
@@ -207,7 +207,7 @@ Do dự đoán theo từng khung ngắn dễ bị rung (label flicker) và nhả
 
     \item \textbf{Reset khi im lặng kéo dài (silence reset):}
     \begin{itemize}
-        \item Tham số: \textit{ENV\_RESET\_ON\_SILENCE\_SEC} (ví dụ 0.8s).
+        \item Tham số: \textit{ENV\_RESET\_ON\_SILENCE\_SEC} (0.8s).
         \item Nếu \textit{rms} liên tục thấp hơn \textit{ENV\_MIN\_RMS} trong thời gian $>0.8s$, hệ thống:
         \begin{itemize}
             \item reset \textit{env\_buffer},
