@@ -6,7 +6,7 @@
 
 Pipeline xử lý tín hiệu kết hợp các kỹ thuật DSP truyền thống nhằm làm sạch và chuẩn hóa tín hiệu đầu vào, trong khi mô hình CNN được huấn luyện trên đặc trưng log-mel spectrogram để học các đặc trưng âm thanh có ý nghĩa. Thông qua việc áp dụng các kỹ thuật regularization và data augmentation, mô hình đạt độ chính xác tốt trên tập kiểm tra và duy trì hiệu suất ổn định khi làm việc với dữ liệu có nhiễu.
 
-Hệ thống cuối cùng có khả năng nhận diện 14 lớp âm thanh môi trường và đáp ứng yêu cầu vận hành trong thời gian thực.
+Hệ thống cuối cùng có khả năng nhận diện 11 lớp âm thanh môi trường và đáp ứng yêu cầu vận hành trong thời gian thực.
 
 \subsection{Đánh giá hiệu suất và ưu điểm}
 
@@ -44,3 +44,6 @@ Trong tương lai, hệ thống có thể được cải thiện theo các hư�
 \subsection{Kết luận cuối cùng}
 
 Đồ án đã chứng minh tính khả thi của việc xây dựng một hệ thống phân loại âm thanh môi trường thời gian thực theo cách tiếp cận kết hợp giữa xử lý tín hiệu số và học sâu. Mặc dù còn tồn tại một số hạn chế, hệ thống hiện tại cung cấp một nền tảng vững chắc cho các nghiên cứu và phát triển tiếp theo, hướng tới các ứng dụng thực tế như nhà thông minh, giám sát an ninh và hỗ trợ con người trong môi trường sống.
+
+\subsection*{6.6.    Dataset}
+\href{https://github.com/karolpiczak/ESC-50}{Đây là đường dẫn đến tập dữ liệu được nhóm sử dụng trong quá trình huấn luyện mô hình}

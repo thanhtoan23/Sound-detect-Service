@@ -111,7 +111,7 @@ Mô hình phân loại được huấn luyện trên tensor log-mel $(128,64,1)$
     \item \textbf{SpecAugment (augment trên spectrogram):}
     \begin{itemize}
         \item Xác suất áp dụng: \textit{p = 0.9}.
-        \item Frequency masking: tối đa \textit{freq\_mask\_max = 14} bins.
+        \item Frequency masking: tối đa \textit{freq\_mask\_max = 11} bins.
         \item Time masking: tối đa \textit{time\_mask\_max = 40} frames.
         \item Mục đích: giúp mô hình ít phụ thuộc vào một dải tần hay một đoạn thời gian cố định, tăng khả năng chịu nhiễu và biến thiên môi trường.
     \end{itemize}

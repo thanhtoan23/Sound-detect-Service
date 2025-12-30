@@ -1,8 +1,8 @@
 # Fdb version 4
-["pdflatex"] 1766989286.95568 "c:/Users/DELL/Documents/_PROJECTS/GitHub/Sound-detect-Service/latex_src/main.tex" "build/main.pdf" "main" 1766989290.84971 0
-  "build/main.aux" 1766989290 17153 34649690b408128ea788d2423dfd95f7 "pdflatex"
-  "build/main.out" 1766989290 14316 1af57b3b31026f17c91c0075c5394472 "pdflatex"
-  "build/main.toc" 1766989290 7007 ebc0dc6433f898455dda7e1b3e73b697 "pdflatex"
+["pdflatex"] 1767107480.23343 "c:/Users/DELL/Documents/_PROJECTS/GitHub/Sound-detect-Service/latex_src/main.tex" "build/main.pdf" "main" 1767107483.62608 0
+  "build/main.aux" 1767107483 17153 34649690b408128ea788d2423dfd95f7 "pdflatex"
+  "build/main.out" 1767107483 14316 1af57b3b31026f17c91c0075c5394472 "pdflatex"
+  "build/main.toc" 1767107483 7007 ebc0dc6433f898455dda7e1b3e73b697 "pdflatex"
   "c:/Users/DELL/Documents/_PROJECTS/GitHub/Sound-detect-Service/latex_src/main.tex" 1766976019 2608 dc08c88a6108a0781608482ab6ce10a6 ""
   "c:/texlive/2025/texmf-dist/fonts/enc/dvips/base/8r.enc" 1746626667 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "c:/texlive/2025/texmf-dist/fonts/enc/dvips/vntex/t5.enc" 1746633510 7824 21ade6c3c7fd67cb4ace8dbc91c53118 ""
@@ -293,9 +293,9 @@
   "contents/sect1a.tex" 1766988880 20290 14d3567118082e530a12d9c10a652ec6 ""
   "contents/sect2.tex" 1766989286 25814 5d1fd0c48ee4a0950f382e4c6185b0cc ""
   "contents/sect3a.tex" 1766970470 8486 fa275491eed6a39bebc1c9d362749fcf ""
-  "contents/sect3c.tex" 1766989246 16474 6fd3bfa5324064192e8fc29c455e8f07 ""
+  "contents/sect3c.tex" 1767107077 16474 15c17bcfaab213c816adb9d528f0acbd ""
   "contents/sect3d.tex" 1766981884 5547 0d9b2b64e582f98915382ca87c0e1986 ""
-  "contents/sect4.tex" 1766982124 4516 9538b6a7e2186dbb942538cacb6d829c ""
+  "contents/sect4.tex" 1767107479 4715 a54c6630797b11d1c89a4511b3f8710e ""
   "graphics/bandpass.png" 1766982813 75147 8b43b8d2b3f81536da2fc97c9ec84496 ""
   "graphics/f_mask.png" 1766973412 113747 5b25b9fc1bf0203afaa783ac27a7372d ""
   "graphics/fig/ui_runtime_dog.png" 1766947898 147905 54c29956db729c98c27301cee7e98bd6 ""
